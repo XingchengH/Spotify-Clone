@@ -1,0 +1,20 @@
+/* CustomResize.css */
+.custom-handle-e {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 8px;
+  height: 100%;
+  cursor: ew-resize;
+  z-index: 10;
+}
+
+.custom-handle-w {
+  position: absolute;
+  left: 0; 
+  top: 0;
+  width: 8px;
+  height: 100%;
+  cursor: ew-resize;
+  z-index: 10;
+}
