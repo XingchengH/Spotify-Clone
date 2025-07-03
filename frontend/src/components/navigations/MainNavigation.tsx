@@ -14,7 +14,6 @@ import { resetAlbums } from "../../store/slices/albumsSlice";
 
 const MainNavigation = () => {
   const token = useSelector((state: RootState) => state.user.token);
-  const user = useSelector((state: RootState) => state.user.user);
   const dispatch = useDispatch();
 
   const handleLogout = () => {
@@ -69,10 +68,10 @@ const MainNavigation = () => {
               </Dropdown.Toggle>
 
               <Dropdown.Menu className="dropdown-menu-end" variant="dark">
-                <Dropdown.Item as={Link} to="/user">
-                  Account
+                <Dropdown.Item as={Link} to={"/user/me"}>
+                  Profile
                 </Dropdown.Item>
-                <Dropdown.Item as={Link} to="/user/profile">
+                <Dropdown.Item as={Link} to="/account">
                   Edit Profile
                 </Dropdown.Item>
                 <Dropdown.Divider />

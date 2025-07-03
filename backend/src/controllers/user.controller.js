@@ -14,22 +14,19 @@ export const getAllUsers = async (req, res, next) => {
 
 export const getCurrentUser = async (req, res, next) => {
   try {
-    const { id } = req.params;
+    const user = await User.findById(req.user.id)
+      .select("-password")
+      .populate("likedSongs")
+      .populate("followedArtists");
 
-    if (req.user.id !== id) {
-      return res.status(403).json({ message: "Access denied" });
-    }
+    if (!user) return res.status(404).json({ message: "User not found" });
 
-    const user = await User.findById(id).select("-password");
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-
-    res.json(req.user);
+    res.json(user);
   } catch (error) {
     next(error);
   }
 };
+
 
 export const getLikedSongs = async (req, res) => {
   try {

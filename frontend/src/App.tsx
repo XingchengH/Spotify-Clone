@@ -4,7 +4,6 @@ import ErrorPage from "./pages/Error";
 import Dashboard from "./pages/home/Dashboard";
 import User from "./pages/User";
 import UserLayout from "./layout/UserLayout";
-import UserProfile from "./pages/UserProfile";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import AlbumPage from "./pages/AlbumPage";
@@ -22,23 +21,40 @@ import { fetchAlbums } from "./store/slices/albumsSlice";
 import LikeSong from "./pages/LikeSong";
 import ArtistPage from "./pages/ArtistPage";
 import { fetchUserFollowedArtists } from "./store/slices/userSlice";
+import EditProfile from "./pages/EditProfile";
+import UserProfile from "./pages/UserProfile";
 
 function App() {
   const dispatch = useDispatch<AppDispath>();
   const { token, user, loading } = useSelector(
     (state: RootState) => state.user
   );
+  const {
+    status: songsStatus,
+    featuredStatus,
+    madeForYouStatus,
+    trendingStatus,
+  } = useSelector((state: RootState) => state.songs);
 
   useEffect(() => {
     if (!loading && token && user?.id) {
-      dispatch(fetchSongs());
+      if (songsStatus === "idle") dispatch(fetchSongs());
+      if (featuredStatus === "idle") dispatch(fetchFeaturedSongs());
+      if (madeForYouStatus === "idle") dispatch(fetchMadeForYouSongs());
+      if (trendingStatus === "idle") dispatch(fetchTrendingSongs());
       dispatch(fetchAlbums());
-      dispatch(fetchFeaturedSongs());
-      dispatch(fetchMadeForYouSongs());
-      dispatch(fetchTrendingSongs());
       dispatch(fetchUserFollowedArtists());
     }
-  }, [loading, token, user?.id, dispatch]);
+  }, [
+    loading,
+    token,
+    user?.id,
+    songsStatus,
+    featuredStatus,
+    madeForYouStatus,
+    trendingStatus,
+    dispatch,
+  ]);
 
   const router = createBrowserRouter([
     {
@@ -62,10 +78,19 @@ function App() {
                   element: <User />,
                 },
                 {
-                  path: "profile",
+                  path: "me",
                   element: <UserProfile />,
                 },
                 { path: "likedSong", element: <LikeSong /> },
+              ],
+            },
+            {
+              path: "account",
+              children: [
+                {
+                  index: true,
+                  element: <EditProfile />,
+                },
               ],
             },
             {

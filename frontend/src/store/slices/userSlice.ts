@@ -20,11 +20,23 @@ type Artist = {
   language?: string;
 };
 
+type User = {
+  _id: string;
+  username: string;
+  email: string;
+  imageUrl?: string;
+  likedSongs: Song[];
+  followedArtists: Artist[];
+  createdAt: string;
+  updatedAt: string;
+};
+
 type Status = "idle" | "loading" | "succeeded" | "failed";
 
 type UserState = {
   token: string | null;
-  user: DecodedToken | null;
+  user: DecodedToken | null; // Decoded token info
+  profile: User | null; // Full DB user info
   loading: boolean;
 
   likedSongs: Song[];
@@ -39,6 +51,7 @@ type UserState = {
 const initialState: UserState = {
   token: null,
   user: null,
+  profile: null,
   loading: true,
 
   likedSongs: [],
@@ -50,6 +63,7 @@ const initialState: UserState = {
   followedArtistsError: null,
 };
 
+// Decode JWT and set auth info
 export const initializeAuth = createAsyncThunk(
   "user/initializeAuth",
   async (_, thunkAPI) => {
@@ -68,6 +82,22 @@ export const initializeAuth = createAsyncThunk(
   }
 );
 
+// Get full user data by ID
+export const fetchCurrentUser = createAsyncThunk(
+  "user/fetchCurrentUser",
+  async (_, thunkAPI) => {
+    try {
+      const res = await axiosInstance.get("users/me");
+      return res.data;
+    } catch (error: any) {
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.message || "Failed to fetch user"
+      );
+    }
+  }
+);
+
+// Get liked songs
 export const fetchUserLikedSongs = createAsyncThunk(
   "user/fetchLikedSongs",
   async (_, thunkAPI) => {
@@ -83,6 +113,7 @@ export const fetchUserLikedSongs = createAsyncThunk(
   }
 );
 
+// Get followed artists
 export const fetchUserFollowedArtists = createAsyncThunk(
   "user/fetchFollowedArtists",
   async (_, thunkAPI) => {
@@ -98,6 +129,7 @@ export const fetchUserFollowedArtists = createAsyncThunk(
   }
 );
 
+// Toggle like/unlike
 export const toggleLikedSong = createAsyncThunk(
   "user/toggleLikedSong",
   async ({ songId, liked }: { songId: string; liked: boolean }, thunkAPI) => {
@@ -130,9 +162,12 @@ const userSlice = createSlice({
     logout(state) {
       state.token = null;
       state.user = null;
+      state.profile = null;
       state.loading = false;
       state.likedSongs = [];
       state.likedSongsStatus = "idle";
+      state.followedArtists = [];
+      state.followedArtistsStatus = "idle";
       localStorage.removeItem("token");
     },
   },
@@ -151,10 +186,18 @@ const userSlice = createSlice({
         state.token = null;
         state.user = null;
         state.loading = false;
-      });
-
-    // Liked Songs
-    builder
+      })
+      .addCase(fetchCurrentUser.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(fetchCurrentUser.fulfilled, (state, action) => {
+        state.profile = action.payload;
+        state.loading = false;
+      })
+      .addCase(fetchCurrentUser.rejected, (state) => {
+        state.profile = null;
+        state.loading = false;
+      })
       .addCase(fetchUserLikedSongs.pending, (state) => {
         state.likedSongsStatus = "loading";
         state.likedSongsError = null;
@@ -166,10 +209,8 @@ const userSlice = createSlice({
       .addCase(fetchUserLikedSongs.rejected, (state, action) => {
         state.likedSongsStatus = "failed";
         state.likedSongsError = action.payload as string;
-      });
+      })
 
-    // Toggle Liked Song
-    builder
       .addCase(toggleLikedSong.pending, (state) => {
         state.likedSongsStatus = "loading";
       })
@@ -180,10 +221,8 @@ const userSlice = createSlice({
       .addCase(toggleLikedSong.rejected, (state, action) => {
         state.likedSongsStatus = "failed";
         state.likedSongsError = action.payload as string;
-      });
+      })
 
-    // Followed Artists
-    builder
       .addCase(fetchUserFollowedArtists.pending, (state) => {
         state.followedArtistsStatus = "loading";
         state.followedArtistsError = null;

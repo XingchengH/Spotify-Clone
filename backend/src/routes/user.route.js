@@ -15,7 +15,7 @@ const router = Router();
 router.get("/", auth, getAllUsers);
 router.get("/likedSongs", auth, getLikedSongs);
 router.get("/followArtist", auth, getFollowingArtist);
-router.get("/:id", auth, getCurrentUser);
+router.get("/me", auth, getCurrentUser);
 
 router.post("/toggleLike", auth, toggleLikedSong);
 router.post("/followArtist", auth, followArtist);

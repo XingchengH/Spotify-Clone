@@ -39,10 +39,34 @@ describe("User API Tests", () => {
 
   it("should view user profile", async () => {
     const res = await request(app)
-      .get(`/api/users/${user._id}`)
+      .get("/api/users/me")
       .set("x-test-user-id", user._id.toString());
-    console.log(res.body); // See what the response actually contains
     expect(res.status).toBe(200);
     expect(res.body.username).toBe("test");
+  });
+
+  it("should update user profile", async () => {
+    const updatedData = {
+      username: "updatedUser",
+      email: "updated@someone.com",
+      password: "updatedPassword123",
+    };
+
+    const res = await request(app)
+      .put(`/api/users/${user._id}`)
+      .set("x-test-user-id", user._id.toString()) // ✅ fixed
+      .send(updatedData);
+
+    expect(res.status).toBe(200);
+    expect(res.body.username).toBe("updatedUser");
+    expect(res.body.email).toBe("updated@someone.com");
+
+    const updatedUser = await User.findById(user._id);
+    const isPasswordCorrect = await bcrypt.compare(
+      "updatedPassword123",
+      updatedUser.password
+    );
+
+    expect(isPasswordCorrect).toBe(true);
   });
 });

@@ -5,7 +5,7 @@ import type { Artist } from "./artistSlice";
 export interface Song {
   _id: string;
   title: string;
-  artist: Artist; 
+  artist: Artist;
   imgUrl?: string;
   audioUrl: string;
   duration: number;
@@ -28,7 +28,7 @@ interface SongsState {
   trending: Song[];
   trendingStatus: "idle" | "loading" | "succeeded" | "failed";
 
-  status: "idle" | "loading" | "succeeded" | "failed"; 
+  status: "idle" | "loading" | "succeeded" | "failed";
   error: string | null;
 }
 
@@ -102,7 +102,9 @@ const songsSlice = createSlice({
       .addCase(fetchSongs.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.error.message || "Failed to fetch songs";
+        console.error("Fetch songs failed:", action.error.message);
       })
+
       .addCase(fetchFeaturedSongs.pending, (state) => {
         state.featuredStatus = "loading";
       })
