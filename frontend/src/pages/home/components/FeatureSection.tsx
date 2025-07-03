@@ -1,32 +1,24 @@
-import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import type { AppDispath, RootState } from "../../../store/store";
-import { fetchFeaturedSongs } from "../../../store/slices/songsSlice";
+import type { Song } from "../../../store/slices/songsSlice";
 import LoadingSpinner from "../../../components/Spinner";
 
-export default function FeatureSection() {
-  const dispatch = useDispatch<AppDispath>();
-  const { token } = useSelector((state: RootState) => state.user);
-  const { featured, featuredStatus, error } = useSelector(
-    (state: RootState) => state.songs
-  );
+type FeatureSectionProps = {
+  isLoading: boolean;
+  songs: Song[];
+  error?: string | null;
+};
 
-  // Fetch featured songs on mount
-  useEffect(() => {
-    if (featuredStatus === "idle") {
-      dispatch(fetchFeaturedSongs());
-    }
-  }, [dispatch, featuredStatus]);
-
-  if (featuredStatus === "loading") return <LoadingSpinner />;
-
-  if (!token) return <></>;
+export default function FeatureSection({
+  isLoading,
+  songs,
+  error,
+}: FeatureSectionProps) {
+  if (isLoading) return <LoadingSpinner />;
 
   if (error) return <p className="text-danger mb-4 display-4">{error}</p>;
 
   return (
     <div className="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-4 mb-4">
-      {featured.map((song) => (
+      {songs.map((song) => (
         <div key={song._id} className="col">
           <div
             className="d-flex align-items-center bg-dark bg-opacity-50 rounded p-2"
@@ -43,7 +35,7 @@ export default function FeatureSection() {
               className="rounded me-3"
               style={{ width: "80px", height: "80px", objectFit: "cover" }}
             />
-            <div className="flex-grow-1 p-2">
+            <div className="flex-grow-1 p-2 text-truncate">
               <h6 className="mb-1 text-truncate" style={{ maxWidth: "100%" }}>
                 {song.title}
               </h6>

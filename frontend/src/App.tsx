@@ -11,12 +11,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispath, RootState } from "./store/store";
 import { useEffect } from "react";
-import {
-  fetchFeaturedSongs,
-  fetchMadeForYouSongs,
-  fetchSongs,
-  fetchTrendingSongs,
-} from "./store/slices/songsSlice";
+import { fetchSongs } from "./store/slices/songsSlice";
 import { fetchAlbums } from "./store/slices/albumsSlice";
 import LikeSong from "./pages/LikeSong";
 import ArtistPage from "./pages/ArtistPage";
@@ -29,32 +24,18 @@ function App() {
   const { token, user, loading } = useSelector(
     (state: RootState) => state.user
   );
-  const {
-    status: songsStatus,
-    featuredStatus,
-    madeForYouStatus,
-    trendingStatus,
-  } = useSelector((state: RootState) => state.songs);
+  const { status: songsStatus } = useSelector(
+    (state: RootState) => state.songs
+  );
 
   useEffect(() => {
     if (!loading && token && user?.id) {
       if (songsStatus === "idle") dispatch(fetchSongs());
-      if (featuredStatus === "idle") dispatch(fetchFeaturedSongs());
-      if (madeForYouStatus === "idle") dispatch(fetchMadeForYouSongs());
-      if (trendingStatus === "idle") dispatch(fetchTrendingSongs());
+
       dispatch(fetchAlbums());
       dispatch(fetchUserFollowedArtists());
     }
-  }, [
-    loading,
-    token,
-    user?.id,
-    songsStatus,
-    featuredStatus,
-    madeForYouStatus,
-    trendingStatus,
-    dispatch,
-  ]);
+  }, [loading, token, user?.id, songsStatus, dispatch]);
 
   const router = createBrowserRouter([
     {

@@ -8,9 +8,11 @@ import { fetchUserFollowedArtists } from "../../store/slices/userSlice";
 import AlbumList from "./AlbumList";
 import FollowedArtistList from "./FollowedArtistList";
 
+
 const LeftSidebar = () => {
   const dispatch = useDispatch<AppDispath>();
   const { status } = useSelector((state: RootState) => state.songs);
+  const token = useSelector((state: RootState) => state.user.token);
 
   const [viewMode, setViewMode] = useState<"albums" | "artists">("albums");
 
@@ -22,6 +24,8 @@ const LeftSidebar = () => {
   );
 
   useEffect(() => {
+    if (!token) return;
+
     if (status === "idle") {
       dispatch(fetchSongs());
     }
@@ -32,46 +36,49 @@ const LeftSidebar = () => {
     if (followedArtistsStatus === "idle") {
       dispatch(fetchUserFollowedArtists());
     }
-  }, [status, albumsStatus, followedArtistsStatus, dispatch]);
+  }, [token, status, albumsStatus, followedArtistsStatus, dispatch]);
 
   return (
     <div className="h-100 d-flex flex-column gap-2">
       <div className="flex-grow-1 rounded bg-dark p-3 d-flex flex-column">
-        <div className="mb-3 d-flex gap-2 text-truncate">
-          <button
-            className={`btn btn-sm rounded-pill text-white px-3 ${
-              viewMode === "albums"
-                ? "btn-primary opacity-100"
-                : "btn-outline-primary opacity-50"
-            }`}
-            onClick={() => setViewMode("albums")}
-          >
-            Albums
-          </button>
-          <button
-            className={`btn btn-sm rounded-pill text-white px-3 ${
-              viewMode === "artists"
-                ? "btn-primary opacity-100"
-                : "btn-outline-primary opacity-50"
-            }`}
-            onClick={() => setViewMode("artists")}
-          >
-            Followed Artists
-          </button>
-        </div>
-
-        <div
-          className="overflow-auto text-white px-2"
-          style={{ height: "calc(100vh - 300px)" }}
-        >
-          {status === "loading" ? (
-            <PlaylistSkeleton />
-          ) : viewMode === "albums" ? (
-            <AlbumList albumList={albumList} />
-          ) : (
-            <FollowedArtistList artists={followedArtists} />
-          )}
-        </div>
+        {token && (
+          <>
+            <div className="mb-3 d-flex gap-2 text-truncate">
+              <button
+                className={`btn btn-sm rounded-pill text-white px-3 ${
+                  viewMode === "albums"
+                    ? "btn-primary opacity-100"
+                    : "btn-outline-primary opacity-50"
+                }`}
+                onClick={() => setViewMode("albums")}
+              >
+                Albums
+              </button>
+              <button
+                className={`btn btn-sm rounded-pill text-white px-3 ${
+                  viewMode === "artists"
+                    ? "btn-primary opacity-100"
+                    : "btn-outline-primary opacity-50"
+                }`}
+                onClick={() => setViewMode("artists")}
+              >
+                Followed Artists
+              </button>
+            </div>
+            <div
+              className="overflow-auto text-white px-2"
+              style={{ height: "calc(100vh - 300px)" }}
+            >
+              {status === "loading" ? (
+                <PlaylistSkeleton />
+              ) : viewMode === "albums" ? (
+                <AlbumList albumList={albumList} />
+              ) : (
+                <FollowedArtistList artists={followedArtists} />
+              )}
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

@@ -4,7 +4,7 @@ import type { AppDispath, RootState } from "../store/store";
 import { useParams } from "react-router-dom";
 import { fetchAlbumById } from "../store/slices/albumsSlice";
 import LoadingSpinner from "../components/Spinner";
-import SongPageLayout from "../layout/SongPageLayout";
+import SongPageLayout from "../components/SongPageLayout";
 import { toggleLikedSong } from "../store/slices/userSlice";
 
 export default function AlbumPage() {
@@ -33,11 +33,6 @@ export default function AlbumPage() {
     dispatch(toggleLikedSong({ songId, liked }));
   };
 
-  const formatDuration = (seconds: number): string => {
-    const min = Math.floor(seconds / 60);
-    const sec = seconds % 60;
-    return `${min}:${sec.toString().padStart(2, "0")}`;
-  };
 
   if (selectedAlbumStatus === "loading") {
     return <LoadingSpinner size="sm" />;
@@ -63,7 +58,6 @@ export default function AlbumPage() {
       songs={selectedAlbum?.songs || []}
       likedSongIds={likedSongIds}
       onLikeToggle={handleLikeToggle}
-      formatDuration={formatDuration}
       showReleaseDate={true}
     />
   );

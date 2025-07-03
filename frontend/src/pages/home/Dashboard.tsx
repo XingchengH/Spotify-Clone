@@ -12,8 +12,15 @@ import SectionGrid from "./components/SectionGrid";
 export default function Dashboard() {
   const dispatch = useDispatch<AppDispath>();
 
-  const { madeForYou, trending, madeForYouStatus, trendingStatus } =
-    useSelector((state: RootState) => state.songs);
+  const {
+    madeForYou,
+    trending,
+    madeForYouStatus,
+    trendingStatus,
+    featured,
+    featuredStatus,
+  } = useSelector((state: RootState) => state.songs);
+  const userId = useSelector((state: RootState) => state.user.user?.id);
 
   useEffect(() => {
     dispatch(fetchFeaturedSongs());
@@ -36,18 +43,26 @@ export default function Dashboard() {
         background: "linear-gradient(to bottom,#18181b,rgb(28, 28, 34))",
       }}
     >
-      <div className="overflow-auto" style={{ height: "calc(100vh - 180px)" }}>
+      <div className="overflow-auto" style={{ height: "calc(100vh - 80px)" }}>
         <div className="p-4 p-sm-6">
           <h1 className="display-5 fw-bold mb-4">{greeting}</h1>
-          <FeatureSection />
+          {userId && (
+            <FeatureSection
+              isLoading={featuredStatus === "loading"}
+              songs={featured}
+            />
+          )}
         </div>
 
         <div className="px-4 px-sm-6 mb-4">
-          <SectionGrid
-            title="Made for You"
-            isLoading={madeForYouStatus === "loading"}
-            songs={madeForYou}
-          />
+          {userId && (
+            <SectionGrid
+              title="Made for You"
+              isLoading={madeForYouStatus === "loading"}
+              songs={madeForYou}
+            />
+          )}
+
           <SectionGrid
             title="Trending"
             isLoading={trendingStatus === "loading"}

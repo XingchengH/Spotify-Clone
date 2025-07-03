@@ -5,7 +5,7 @@ import {
   fetchUserLikedSongs,
   toggleLikedSong,
 } from "../store/slices/userSlice";
-import SongPageLayout from "../layout/SongPageLayout";
+import SongPageLayout from "../components/SongPageLayout";
 
 export default function LikedSongs() {
   const dispatch = useDispatch<AppDispath>();
@@ -16,12 +16,6 @@ export default function LikedSongs() {
   }, [dispatch]);
 
   const likedSongIds = new Set(likedSongs.map((song) => song._id));
-
-  function formatDuration(seconds: number): string {
-    const min = Math.floor(seconds / 60);
-    const sec = seconds % 60;
-    return `${min}:${sec.toString().padStart(2, "0")}`;
-  }
 
   const handleLikeToggle = (songId: string) => {
     const isLiked = likedSongIds.has(songId);
@@ -39,7 +33,6 @@ export default function LikedSongs() {
       songs={likedSongs}
       likedSongIds={likedSongIds}
       onLikeToggle={handleLikeToggle}
-      formatDuration={formatDuration}
     />
   );
 }
