@@ -1,15 +1,15 @@
 import express from "express";
 import cors from "cors"; // cross origin access since current using two different port
 import dotenv from "dotenv";
-import { connectDB } from "./lib/db.js";
-dotenv.config();
+import userRoutes from "../backend/src/routes/user.route.js";
+import authRoute from "../backend/src/routes/auth.route.js";
+import songRoutes from "../backend/src/routes/song.route.js";
+import albumRoutes from "../backend/src/routes/album.route.js";
+import artistRoutes from "../backend/src/routes/artist.route.js";
+import statRoutes from "../backend/src/routes/stat.route.js";
+import { connectDB } from "./src/lib/db.js";
 
-import userRoutes from "./routes/user.route.js";
-import authRoute from "./routes/auth.route.js";
-import songRoutes from "./routes/song.route.js";
-import albumRoutes from "./routes/album.route.js";
-import artistRoutes from "./routes/artist.route.js";
-import statRoutes from "./routes/stat.route.js";
+dotenv.config();
 
 const app = express();
 app.use(express.urlencoded({ extended: true }));
