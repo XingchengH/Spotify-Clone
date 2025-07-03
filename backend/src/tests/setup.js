@@ -9,7 +9,7 @@ beforeAll(async () => {
 
   await mongoose.connect(url, {
     useNewUrlParser: true,
-    userUnifiedTopology: true,
+    useUnifiedTopology: true,
   });
 });
 
@@ -21,8 +21,6 @@ afterEach(async () => {
 });
 
 afterAll(async () => {
-    await mongoose.connection.close();
-    await mongo.stop();
-})
-
-
+  await mongoose.connection.close();
+  await mongo.stop();
+});

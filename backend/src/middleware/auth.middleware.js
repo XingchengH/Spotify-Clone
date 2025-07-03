@@ -5,7 +5,7 @@ const auth = (req, res, next) => {
   const token = authHeader?.split(" ")[1];
 
   // console.log("TOKEN:", token);
-  // console.log("SECRET:", process.env.JWT_SECRET); 
+  // console.log("SECRET:", process.env.JWT_SECRET);
 
   if (!token) {
     console.log("No token provided");
