@@ -3,6 +3,7 @@ import MainNavigation from "../components/navigations/MainNavigation";
 import LeftSidebar from "../components/navigations/LeftSidebar";
 import { ResizableBox } from "react-resizable";
 import "react-resizable/css/styles.css";
+import AudioPlayer from "./components/AudioPlayer";
 
 export default function RootLayout() {
   const CustomHandleE = ({ ...restProps }) => (
@@ -17,10 +18,14 @@ export default function RootLayout() {
       className="min-vh-100 d-flex flex-column"
       style={{ background: "#000" }}
     >
+      {/* Top Nav */}
       <header className="sticky-top bg-dark text-white">
         <MainNavigation />
       </header>
 
+    <AudioPlayer />
+
+      {/* Left side */}
       <div className="flex-grow-1 d-flex" style={{ minHeight: 0 }}>
         <ResizableBox
           width={100}

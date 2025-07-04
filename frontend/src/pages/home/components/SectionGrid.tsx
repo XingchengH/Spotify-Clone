@@ -1,5 +1,7 @@
 import type { Song } from "../../../store/slices/songsSlice";
 import LoadingSpinner from "../../../components/Spinner";
+import PlayButton from "./PlayButton";
+import { useState } from "react";
 
 type SectionGridProps = {
   title: string;
@@ -8,6 +10,8 @@ type SectionGridProps = {
 };
 
 const SectionGrid = ({ songs, title, isLoading }: SectionGridProps) => {
+  const [hoveredSongId, setHoveredSongId] = useState<string | null>(null);
+
   if (isLoading) return <LoadingSpinner />;
 
   return (
@@ -25,15 +29,17 @@ const SectionGrid = ({ songs, title, isLoading }: SectionGridProps) => {
             <div
               className="p-3 rounded bg-dark bg-opacity-50 shadow-sm position-relative"
               style={{ cursor: "pointer", transition: "background 0.3s" }}
-              onMouseEnter={(e) =>
-                e.currentTarget.classList.add("bg-opacity-75")
-              }
-              onMouseLeave={(e) =>
-                e.currentTarget.classList.remove("bg-opacity-75")
-              }
+              onMouseEnter={(e) => {
+                setHoveredSongId(song._id);
+                e.currentTarget.classList.add("bg-opacity-75");
+              }}
+              onMouseLeave={(e) => {
+                setHoveredSongId(null);
+                e.currentTarget.classList.remove("bg-opacity-75");
+              }}
             >
               <div className="mb-3 position-relative">
-                <div className="ratio ratio-1x1 rounded overflow-hidden shadow">
+                <div className="ratio ratio-1x1 rounded overflow-hidden shadow position-relative">
                   <img
                     src={song.imgUrl}
                     alt={song.title}
@@ -49,8 +55,14 @@ const SectionGrid = ({ songs, title, isLoading }: SectionGridProps) => {
                       (e.currentTarget.style.transform = "scale(1)")
                     }
                   />
+                  <div className="d-flex justify-content-center align-items-center">
+                    <PlayButton
+                      song={song}
+                      size={50}
+                      isHover={hoveredSongId === song._id}
+                    />
+                  </div>
                 </div>
-                {/* <PlayButton song={song} /> */}
               </div>
 
               <h3

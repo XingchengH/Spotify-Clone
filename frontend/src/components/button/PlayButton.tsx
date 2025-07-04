@@ -1,16 +1,18 @@
 import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlay } from "@fortawesome/free-solid-svg-icons";
+import { faPlay, faPause } from "@fortawesome/free-solid-svg-icons";
 
 type PlayButtonProps = {
-  onClick?: () => void;
   icon?: React.ReactNode;
   size?: number;
+  isPlaying?: boolean;
+  handlePlayAlbum?: () => void;
   classes?: string;
 };
 
 const PlayButton: React.FC<PlayButtonProps> = ({
-  onClick,
+  handlePlayAlbum,
+  isPlaying,
   icon,
   size = 56,
   classes,
@@ -18,6 +20,7 @@ const PlayButton: React.FC<PlayButtonProps> = ({
   return (
     <button
       type="button"
+      onClick={handlePlayAlbum}
       className={`btn btn-success rounded-circle d-flex justify-content-center align-items-center p-0 ${classes}`}
       style={{
         width: `${size}px`,
@@ -32,11 +35,10 @@ const PlayButton: React.FC<PlayButtonProps> = ({
         e.currentTarget.style.backgroundColor = "#28a745";
         e.currentTarget.style.transform = "scale(1)";
       }}
-      onClick={onClick}
     >
       {icon ?? (
         <FontAwesomeIcon
-          icon={faPlay}
+          icon={isPlaying ? faPause : faPlay}
           className="text-black"
           style={{ width: "14px", height: "28px", lineHeight: 1 }}
         />

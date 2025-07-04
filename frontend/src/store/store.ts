@@ -3,6 +3,7 @@ import userSlide from "./slices/userSlice";
 import songsSlice from "./slices/songsSlice";
 import albumsSlice from "./slices/albumsSlice";
 import artistSlide from "./slices/artistSlice";
+import playerSongs from "./slices/usePlayerSlice";
 
 const store = configureStore({
   reducer: {
@@ -10,6 +11,7 @@ const store = configureStore({
     songs: songsSlice.reducer,
     albums: albumsSlice.reducer,
     artist: artistSlide.reducer,
+    playerSongs: playerSongs.reducer,
   },
 });
 

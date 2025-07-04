@@ -1,13 +1,17 @@
 // components/SongPageLayout.tsx
 import PlayButton from "./button/PlayButton";
 import SongTable from "./SongTable";
+import type { Song } from "../store/slices/songsSlice";
+import { playAlbum, togglePlay } from "../store/slices/usePlayerSlice";
+import type { AppDispath, RootState } from "../store/store";
+import { useDispatch, useSelector } from "react-redux";
 
 interface SongPageLayoutProps {
   coverImgUrl: string | undefined;
   typeLabel: string;
   title: string | undefined;
   subtitle?: React.ReactNode;
-  songs: any[];
+  songs: Song[];
   likedSongIds: Set<string>;
   onLikeToggle: (songId: string) => void;
   showReleaseDate?: boolean;
@@ -23,6 +27,22 @@ export default function SongPageLayout({
   onLikeToggle,
   showReleaseDate = false,
 }: SongPageLayoutProps) {
+  const dispatch = useDispatch<AppDispath>();
+  const { currentSong, isPlaying } = useSelector(
+    (state: RootState) => state.playerSongs
+  );
+
+  const handlePlayAlbum = () => {
+    if (!songs) return;
+    const isCurrentAlbumPlaying = songs.some(
+      (song) => song._id === currentSong?._id
+    );
+    if (isCurrentAlbumPlaying) dispatch(togglePlay());
+    else {
+      dispatch(playAlbum({ songs, startIdx: 0 }));
+    }
+  };
+
   return (
     <div className="h-100 overflow-hidden rounded">
       <div
@@ -69,7 +89,13 @@ export default function SongPageLayout({
 
             {/* Play Button */}
             <div className="px-4 pb-3 d-flex align-items-center gap-3">
-              <PlayButton />
+              <PlayButton
+                handlePlayAlbum={handlePlayAlbum}
+                isPlaying={
+                  isPlaying &&
+                  songs.some((song) => song._id === currentSong?._id)
+                }
+              />
             </div>
 
             {/* Songs Table container */}
@@ -84,4 +110,10 @@ export default function SongPageLayout({
       </div>
     </div>
   );
+}
+function dispatch(arg0: {
+  payload: { songs: Song[]; startIdx?: number };
+  type: "playerSongs/playAlbum";
+}) {
+  throw new Error("Function not implemented.");
 }

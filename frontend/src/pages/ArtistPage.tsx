@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispath, RootState } from "../store/store";
 import { fetchArtistById } from "../store/slices/artistSlice";
-import type { Song } from "../store/slices/songsSlice";
+import { fetchSongs, type Song } from "../store/slices/songsSlice";
 import { useParams } from "react-router-dom";
 import PlayButton from "../components/button/PlayButton";
 import { axiosInstance } from "../lib/axios";
@@ -31,6 +31,11 @@ export default function ArtistPage() {
   useEffect(() => {
     if (artistId) dispatch(fetchArtistById(artistId));
   }, [dispatch, artistId]);
+
+  useEffect(() => {
+    dispatch(fetchSongs())
+  }, [dispatch])
+
 
   const artistSongs: Song[] = allSongs.filter(
     (song) => song.artist?._id === artistId

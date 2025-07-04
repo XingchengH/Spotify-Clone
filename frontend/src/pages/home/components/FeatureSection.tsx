@@ -1,5 +1,7 @@
 import type { Song } from "../../../store/slices/songsSlice";
 import LoadingSpinner from "../../../components/Spinner";
+import PlayButton from "./PlayButton";
+import { useState } from "react";
 
 type FeatureSectionProps = {
   isLoading: boolean;
@@ -12,6 +14,8 @@ export default function FeatureSection({
   songs,
   error,
 }: FeatureSectionProps) {
+  const [hoveredSongId, setHoveredSongId] = useState<string | null>(null);
+
   if (isLoading) return <LoadingSpinner />;
 
   if (error) return <p className="text-danger mb-4 display-4">{error}</p>;
@@ -23,11 +27,15 @@ export default function FeatureSection({
           <div
             className="d-flex align-items-center bg-dark bg-opacity-50 rounded p-2"
             style={{ cursor: "pointer", transition: "box-shadow 0.3s" }}
-            onMouseEnter={(e) =>
-              (e.currentTarget.style.boxShadow =
-                "0 4px 12px rgba(255,255,255,0.5)")
-            }
-            onMouseLeave={(e) => (e.currentTarget.style.boxShadow = "")}
+            onMouseEnter={(e) => {
+              setHoveredSongId(song._id);
+              e.currentTarget.style.boxShadow =
+                "0 4px 12px rgba(255,255,255,0.5)";
+            }}
+            onMouseLeave={(e) => {
+              setHoveredSongId(null);
+              e.currentTarget.style.boxShadow = "";
+            }}
           >
             <img
               src={song.imgUrl}
@@ -49,6 +57,7 @@ export default function FeatureSection({
                   : song.artist?.name || "Unknown Artist"}
               </small>
             </div>
+            <PlayButton song={song} isHover={hoveredSongId === song._id} />
           </div>
         </div>
       ))}
