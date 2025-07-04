@@ -29,26 +29,11 @@ export default function SongTable({
     <div
       className="backdrop-blur-sm overflow-auto m-2 rounded text-truncate p-2"
       style={{
-        maxHeight: "calc(100vh - 50vh)",
+        maxHeight: "calc(100vh - 449px)",
       }}
     >
-      <table className="table table-hover table-borderless text-white align-middle mb-0">
-        <thead>
-          <tr>
-            <th className="text-muted fw-normal">#</th>
-            <th className="text-muted fw-normal">Title</th>
-            {showReleaseDate && (
-              <th className="text-muted fw-normal">Released</th>
-            )}
-            <th className="text-end text-muted fw-normal">
-              <FontAwesomeIcon icon={faClock} />
-            </th>
-            <th
-              className="text-end text-muted fw-normal"
-              style={{ width: "50px" }}
-            />
-          </tr>
-        </thead>
+      <table className="table table-hover table-borderless text-white align-middle mb-0 table_custom">
+        <thead></thead>
         <tbody>
           {songs.map((song, index) => (
             <tr key={song._id} className="bg-transparent">

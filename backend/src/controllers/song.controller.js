@@ -4,12 +4,33 @@ import User from "../models/user.model.js";
 import Artist from "../models/artist.model.js";
 
 // Get all songs with populated artist
-export const getAllSongs = async (req, res, next) => {
+// GET /songs?search=&language=&genre=
+export const getAllSongs = async (req, res) => {
   try {
-    const songs = await Song.find().populate("artist").sort({ createdAt: -1 });
+    const { search, genre, language } = req.query;
+
+    const filter = {};
+
+    if (search) {
+      const regex = new RegExp(search, "i"); // case-insensitive
+      filter.$or = [
+        { title: regex },
+        { "artist.name": regex } // If using `.populate()`
+      ];
+    }
+
+    if (genre) {
+      filter.genre = genre;
+    }
+
+    if (language) {
+      filter.language = language;
+    }
+
+    const songs = await Song.find(filter).populate("artist");
     res.json(songs);
-  } catch (err) {
-    next(err);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching songs", error });
   }
 };
 

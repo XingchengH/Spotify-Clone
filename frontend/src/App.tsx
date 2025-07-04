@@ -18,6 +18,8 @@ import ArtistPage from "./pages/ArtistPage";
 import { fetchUserFollowedArtists } from "./store/slices/userSlice";
 import EditProfile from "./pages/EditProfile";
 import UserProfile from "./pages/UserProfile";
+import SearchResultsPage from "./pages/SearchResultsPage";
+import './forceCss.css'
 
 function App() {
   const dispatch = useDispatch<AppDispath>();
@@ -81,6 +83,7 @@ function App() {
           ],
         },
         { path: "artist/:artistId", element: <ArtistPage /> },
+        { path: "search", element: <SearchResultsPage /> },
       ],
     },
   ]);

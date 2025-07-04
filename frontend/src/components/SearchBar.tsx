@@ -1,51 +1,73 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Form, FormControl, Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMusic, faSearch } from "@fortawesome/free-solid-svg-icons";
-import { useDispatch, useSelector } from "react-redux";
-import type { AppDispath, RootState } from "../store/store";
-import { fetchSongs, type Song } from "../store/slices/songsSlice";
+import { useDispatch } from "react-redux";
+import { useNavigate, useLocation } from "react-router-dom";
+import type { AppDispath } from "../store/store";
+import { fetchSongs } from "../store/slices/songsSlice";
 
 const SearchBar = () => {
   const dispatch = useDispatch<AppDispath>();
-  const { songs } = useSelector((state: RootState) => state.songs);
+  const navigate = useNavigate();
+  const location = useLocation();
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   const [query, setQuery] = useState("");
-  const [filteredSongs, setFilteredSongs] = useState<Song[]>([]);
-  const [showResults, setShowResults] = useState(false);
   const [genreFilter, setGenreFilter] = useState("");
   const [languageFilter, setLanguageFilter] = useState("");
+  const [showDropdown, setShowDropdown] = useState(false);
 
   useEffect(() => {
     dispatch(fetchSongs());
   }, [dispatch]);
 
   useEffect(() => {
-    if (!query.trim()) {
-      setFilteredSongs([]);
-      setShowResults(false);
-      return;
+    if (!location.pathname.startsWith("/search")) {
+      setQuery("");
+      setGenreFilter("");
+      setLanguageFilter("");
     }
+  }, [location.pathname]);
 
-    const lowerQuery = query.toLowerCase();
+  // Navigate to search with updated filters
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      if (query.trim() !== "") {
+        const params = new URLSearchParams({
+          q: query,
+          genre: genreFilter,
+          language: languageFilter,
+        });
+        if (!location.pathname.startsWith("/search")) {
+          navigate(`/search?${params.toString()}`);
+        } else {
+          navigate(`/search?${params.toString()}`, { replace: true });
+        }
+      }
+    }, 300);
 
-    const matched = songs.filter((song) => {
-      const matchesQuery =
-        song.title.toLowerCase().includes(lowerQuery) ||
-        song.artist.name.toLowerCase().includes(lowerQuery);
-      const matchesGenre = !genreFilter || song.genre === genreFilter;
-      const matchesLanguage =
-        !languageFilter || song.language === languageFilter;
-      return matchesQuery && matchesGenre && matchesLanguage;
-    });
+    return () => clearTimeout(timeout);
+  }, [navigate, location.pathname, query, genreFilter, languageFilter]);
 
-    setFilteredSongs(matched);
-    setShowResults(true);
-  }, [query, genreFilter, languageFilter, songs]);
+  // Showing dropdown
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(e.target as Node)
+      ) {
+        setShowDropdown(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   return (
     <div
       className="position-relative"
+      ref={dropdownRef}
       style={{ maxWidth: "400px", width: "100%" }}
     >
       <Form
@@ -57,20 +79,20 @@ const SearchBar = () => {
         <FormControl
           type="search"
           placeholder="What do you want to play?"
-          className="bg-dark text-white border-0 ms-2"
+          className="bg-dark text-white border-0 ms-2 text-truncate"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          onFocus={() => setShowResults(true)}
+          onFocus={() => setShowDropdown(true)}
         />
-        <Button variant="link" className="text-white">
+        <Button type="button" variant="link" className="text-white">
           <FontAwesomeIcon icon={faMusic} />
         </Button>
       </Form>
 
-      {showResults && (
+      {showDropdown && (
         <div
-          className="bg-dark bg-opacity-50 backdrop-blur text-white p-3 rounded shadow mt-2 position-absolute"
-          style={{ zIndex: 1000, width: "100%" }}
+          className="bg-dark bg-opacity-75 backdrop-blur text-white p-3 rounded shadow mt-2 position-absolute"
+          style={{ zIndex: 10, width: "100%" }}
         >
           <div className="mb-2 d-flex gap-2">
             <select
@@ -80,8 +102,8 @@ const SearchBar = () => {
             >
               <option value="">All Genres</option>
               <option value="Pop">Pop</option>
-              <option value="rock">Rock</option>
-              <option value="hiphop">Hip-Hop</option>
+              <option value="Rock">Rock</option>
+              <option value="Hip-Hop">Hip-Hop</option>
             </select>
 
             <select
@@ -96,30 +118,9 @@ const SearchBar = () => {
               <option value="Japanese">Japanese</option>
             </select>
           </div>
-
-          {filteredSongs.length > 0 ? (
-            <ul className="list-unstyled mb-0">
-              {filteredSongs.map((song) => (
-                <li
-                  key={song._id}
-                  className="py-2 border-bottom border-secondary"
-                  style={{ cursor: "pointer" }}
-                >
-                  <FontAwesomeIcon icon={faMusic} className="me-2" />
-                  <p className="d-inline">
-                    {song.title} –{" "}
-                    <span
-                      style={{ fontStyle: "italic", fontWeight: "lighter" }}
-                    >
-                      {song.artist?.name || "Unknow Artist"}
-                    </span>
-                  </p>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p className="mb-0 text-muted">No matching songs found.</p>
-          )}
+          <p className="text-muted mb-0" style={{ fontSize: "0.85rem" }}>
+            Showing results for: <strong>{query || "..."}</strong>
+          </p>
         </div>
       )}
     </div>
