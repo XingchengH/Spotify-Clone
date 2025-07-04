@@ -23,7 +23,7 @@ export default function RootLayout() {
 
       <div className="flex-grow-1 d-flex" style={{ minHeight: 0 }}>
         <ResizableBox
-          width={300}
+          width={100}
           axis="x"
           minConstraints={[125, 0]}
           maxConstraints={[400, 0]}
@@ -46,7 +46,7 @@ export default function RootLayout() {
         </div>
 
         <ResizableBox
-          width={200}
+          width={100}
           axis="x"
           minConstraints={[100, 0]}
           maxConstraints={[400, 0]}

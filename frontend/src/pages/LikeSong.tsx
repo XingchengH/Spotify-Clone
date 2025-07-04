@@ -33,6 +33,7 @@ export default function LikedSongs() {
       songs={likedSongs}
       likedSongIds={likedSongIds}
       onLikeToggle={handleLikeToggle}
+      showReleaseDate={false}
     />
   );
 }

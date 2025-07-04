@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMusic, faSearch } from "@fortawesome/free-solid-svg-icons";
 import { fetchSongs } from "../store/slices/songsSlice";
 import type { AppDispath } from "../store/store";
+import { AnimatePresence, motion } from "motion/react";
 
 const SearchBar = () => {
   const dispatch = useDispatch<AppDispath>();
@@ -89,40 +90,46 @@ const SearchBar = () => {
         </button>
       </form>
 
-      {showDropdown && (
-        <div
-          className="bg-dark bg-opacity-75 backdrop-blur text-white p-3 rounded shadow mt-2 position-absolute"
-          style={{ zIndex: 10, width: "100%" }}
-        >
-          <div className="mb-2 d-flex gap-2">
-            <select
-              className="form-select form-select-sm bg-dark bg-opacity-25 text-white border-secondary"
-              value={genreFilter}
-              onChange={(e) => setGenreFilter(e.target.value)}
-            >
-              <option value="">All Genres</option>
-              <option value="Pop">Pop</option>
-              <option value="Rock">Rock</option>
-              <option value="Hip-Hop">Hip-Hop</option>
-            </select>
+      <AnimatePresence>
+        {showDropdown && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.2 }}
+            className="bg-dark bg-opacity-75 backdrop-blur text-white p-3 rounded shadow mt-2 position-absolute"
+            style={{ zIndex: 10, width: "100%" }}
+          >
+            <div className="mb-2 d-flex gap-2">
+              <select
+                className="form-select form-select-sm bg-dark bg-opacity-25 text-white border-secondary"
+                value={genreFilter}
+                onChange={(e) => setGenreFilter(e.target.value)}
+              >
+                <option value="">All Genres</option>
+                <option value="Pop">Pop</option>
+                <option value="Rock">Rock</option>
+                <option value="Hip-Hop">Hip-Hop</option>
+              </select>
 
-            <select
-              className="form-select form-select-sm bg-dark bg-opacity-25 text-white border-secondary"
-              value={languageFilter}
-              onChange={(e) => setLanguageFilter(e.target.value)}
-            >
-              <option value="">All Languages</option>
-              <option value="English">English</option>
-              <option value="Mandarin">Mandarin</option>
-              <option value="Korean">Korean</option>
-              <option value="Japanese">Japanese</option>
-            </select>
-          </div>
-          <p className="text-muted mb-0" style={{ fontSize: "0.85rem" }}>
-            Showing results for: <strong>{query || "..."}</strong>
-          </p>
-        </div>
-      )}
+              <select
+                className="form-select form-select-sm bg-dark bg-opacity-25 text-white border-secondary"
+                value={languageFilter}
+                onChange={(e) => setLanguageFilter(e.target.value)}
+              >
+                <option value="">All Languages</option>
+                <option value="English">English</option>
+                <option value="Mandarin">Mandarin</option>
+                <option value="Korean">Korean</option>
+                <option value="Japanese">Japanese</option>
+              </select>
+            </div>
+            <p className="text-muted mb-0" style={{ fontSize: "0.85rem" }}>
+              Showing results for: <strong>{query || "..."}</strong>
+            </p>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

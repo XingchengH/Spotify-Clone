@@ -71,7 +71,7 @@ export default function ArtistPage() {
         style={{
           backgroundImage: `url(${artist.imgUrl})`,
           backgroundSize: "cover",
-          backgroundPosition: "center",
+          backgroundPosition: "center 20%",
           height: "300px",
         }}
       >

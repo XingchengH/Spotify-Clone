@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Form, Button, Container, Alert } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { axiosInstance, updateApiToken } from "../lib/axios";
+import { axiosInstance } from "../lib/axios";
 import { login } from "../store/slices/userSlice";
 import LoadingSpinner from "../components/Spinner";
 import type { RootState } from "../store/store";
@@ -42,7 +42,7 @@ export default function Login() {
   };
 
   return (
-    <Container style={{ maxWidth: "400px" }} className="mt-5 position-relative">
+    <Container style={{ maxWidth: "400px", boxShadow: "5px 10px 20px rgba(255,255,255,0.4)" }} className="mt-5 position-relative border-bottom border-end p-4">
       {loading && <LoadingSpinner fullscreen text="Logging in..." />}
 
       <h2 className="mb-4">Login</h2>
