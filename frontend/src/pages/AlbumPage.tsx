@@ -1,11 +1,11 @@
 import { useEffect } from "react";
+import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispath, RootState } from "../store/store";
-import { useParams } from "react-router-dom";
 import { fetchAlbumById } from "../store/slices/albumsSlice";
+import { toggleLikedSong } from "../store/slices/userSlice";
 import LoadingSpinner from "../components/Spinner";
 import SongPageLayout from "../components/SongPageLayout";
-import { toggleLikedSong } from "../store/slices/userSlice";
 
 export default function AlbumPage() {
   const { albumId } = useParams();
@@ -32,7 +32,6 @@ export default function AlbumPage() {
     const liked = likedSongIds.has(songId);
     dispatch(toggleLikedSong({ songId, liked }));
   };
-
 
   if (selectedAlbumStatus === "loading") {
     return <LoadingSpinner size="sm" />;

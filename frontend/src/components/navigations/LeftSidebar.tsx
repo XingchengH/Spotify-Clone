@@ -1,4 +1,3 @@
-import PlaylistSkeleton from "../skeletons/PlaylistSkeleton";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispath, RootState } from "../../store/store";
@@ -7,7 +6,7 @@ import { fetchAlbums } from "../../store/slices/albumsSlice";
 import { fetchUserFollowedArtists } from "../../store/slices/userSlice";
 import AlbumList from "./AlbumList";
 import FollowedArtistList from "./FollowedArtistList";
-
+import PlaylistSkeleton from "../skeletons/PlaylistSkeleton";
 
 const LeftSidebar = () => {
   const dispatch = useDispatch<AppDispath>();

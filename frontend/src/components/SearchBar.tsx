@@ -1,11 +1,10 @@
 import { useEffect, useRef, useState } from "react";
-import { Form, FormControl, Button } from "react-bootstrap";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faMusic, faSearch } from "@fortawesome/free-solid-svg-icons";
 import { useDispatch } from "react-redux";
 import { useNavigate, useLocation } from "react-router-dom";
-import type { AppDispath } from "../store/store";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faMusic, faSearch } from "@fortawesome/free-solid-svg-icons";
 import { fetchSongs } from "../store/slices/songsSlice";
+import type { AppDispath } from "../store/store";
 
 const SearchBar = () => {
   const dispatch = useDispatch<AppDispath>();
@@ -67,27 +66,28 @@ const SearchBar = () => {
   return (
     <div
       className="position-relative"
+      style={{ width: "400px" }}
       ref={dropdownRef}
-      style={{ maxWidth: "400px", width: "100%" }}
     >
-      <Form
+      <form
         className="d-flex bg-dark rounded-pill align-items-center px-3 w-100"
         style={{ border: "1px solid #333" }}
         onSubmit={(e) => e.preventDefault()}
       >
         <FontAwesomeIcon icon={faSearch} color="#ccc" />
-        <FormControl
+
+        <input
           type="search"
+          className="form-control bg-dark text-white border-0 ms-2 text-truncate"
           placeholder="What do you want to play?"
-          className="bg-dark text-white border-0 ms-2 text-truncate"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onFocus={() => setShowDropdown(true)}
         />
-        <Button type="button" variant="link" className="text-white">
+        <button type="button" className="btn btn-link text-white p-0 ms-2">
           <FontAwesomeIcon icon={faMusic} />
-        </Button>
-      </Form>
+        </button>
+      </form>
 
       {showDropdown && (
         <div

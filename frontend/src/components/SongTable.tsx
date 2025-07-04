@@ -1,9 +1,8 @@
+import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faClock } from "@fortawesome/free-solid-svg-icons";
 import { faHeart as solidHeart } from "@fortawesome/free-solid-svg-icons";
 import { faHeart as regularHeart } from "@fortawesome/free-regular-svg-icons";
-import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
 import type { Song } from "../store/slices/songsSlice";
 
 const formatDuration = (seconds: number): string => {

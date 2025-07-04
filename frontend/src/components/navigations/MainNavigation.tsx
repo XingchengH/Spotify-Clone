@@ -37,15 +37,24 @@ const MainNavigation = () => {
           <i className="fa fa-spotify">Spotify</i>
         </Link>
         <div className="d-flex align-items-center gap-3">
-          <Link to="/" className="text-white">
-            <FontAwesomeIcon icon={faHome} size="lg" />
-          </Link>
+          <div
+            className="border-none rounded-circle bg-dark d-flex justify-content-center align-items-center"
+            style={{ width: "40px", height: "40px" }}
+          >
+            <Link
+              to="/"
+              className="text-white"
+              style={{ transform: "translate(0px, -1px)" }}
+            >
+              <FontAwesomeIcon icon={faHome} size="lg" />
+            </Link>
+          </div>
 
           <SearchBar />
         </div>
 
         {token ? (
-          <div className="d-flex align-items-center gap-4">
+          <div className="d-none d-sm-flex align-items-center gap-4">
             <FontAwesomeIcon
               icon={faBell}
               color="white"
@@ -62,7 +71,9 @@ const MainNavigation = () => {
             <Dropdown align="end">
               <Dropdown.Toggle
                 variant="dark"
-                className="p-0 border-0 d-flex align-items-center"
+                className="p-0 border d-flex align-items-center justify-content-center rounded-circle "
+                style={{ width: "40px", height: "40px" }}
+                bsPrefix="custom-dropdown-toggle"
               >
                 <Image src={avg} roundedCircle width={32} height={32} />
               </Dropdown.Toggle>

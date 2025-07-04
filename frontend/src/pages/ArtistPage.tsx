@@ -1,15 +1,15 @@
-import { useDispatch, useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
 import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import type { AppDispath, RootState } from "../store/store";
 import { fetchArtistById } from "../store/slices/artistSlice";
-import PlayButton from "../components/button/PlayButton";
 import type { Song } from "../store/slices/songsSlice";
+import { useParams } from "react-router-dom";
+import PlayButton from "../components/button/PlayButton";
+import { axiosInstance } from "../lib/axios";
 import {
   fetchUserFollowedArtists,
   toggleLikedSong,
 } from "../store/slices/userSlice";
-import { axiosInstance } from "../lib/axios";
 import SongTable from "../components/SongTable";
 
 export default function ArtistPage() {

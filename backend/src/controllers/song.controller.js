@@ -3,7 +3,6 @@ import { Song } from "../models/song.model.js";
 import User from "../models/user.model.js";
 import Artist from "../models/artist.model.js";
 
-// Get all songs with populated artist
 // GET /songs?search=&language=&genre=
 export const getAllSongs = async (req, res) => {
   try {
@@ -13,6 +12,7 @@ export const getAllSongs = async (req, res) => {
 
     if (search) {
       const regex = new RegExp(search, "i"); // case-insensitive
+      // condition: Match documents where either title or artist.name matches the regex
       filter.$or = [
         { title: regex },
         { "artist.name": regex } // If using `.populate()`

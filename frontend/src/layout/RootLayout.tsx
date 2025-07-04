@@ -1,9 +1,8 @@
-import MainNavigation from "../components/navigations/MainNavigation";
 import { Outlet } from "react-router-dom";
+import MainNavigation from "../components/navigations/MainNavigation";
+import LeftSidebar from "../components/navigations/LeftSidebar";
 import { ResizableBox } from "react-resizable";
 import "react-resizable/css/styles.css";
-import "./RootLayout.css";
-import LeftSidebar from "../components/navigations/LeftSidebar";
 
 export default function RootLayout() {
   const CustomHandleE = ({ ...restProps }) => (
