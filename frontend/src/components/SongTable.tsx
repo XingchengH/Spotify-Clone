@@ -10,6 +10,8 @@ import type { Song } from "../store/slices/songsSlice";
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispath, RootState } from "../store/store";
 import { playAlbum, togglePlay } from "../store/slices/usePlayerSlice";
+import { useEffect } from "react";
+import { fetchUserLikedSongs } from "../store/slices/userSlice";
 
 const formatDuration = (seconds: number): string => {
   const min = Math.floor(seconds / 60);
@@ -34,6 +36,10 @@ export default function SongTable({
   const { currentSong, isPlaying } = useSelector(
     (state: RootState) => state.playerSongs
   );
+
+  useEffect(() => {
+    dispatch(fetchUserLikedSongs());
+  }, [dispatch]);
 
   const handlePlaySong = (idx: number) => {
     if (!songs) return;
