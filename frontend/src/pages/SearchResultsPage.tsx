@@ -10,6 +10,7 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHeart as solidHeart } from "@fortawesome/free-solid-svg-icons";
 import { faHeart as regularHeart } from "@fortawesome/free-regular-svg-icons";
+import SongTable from "../components/SongTable";
 
 const SearchResultPage = () => {
   const dispatch = useDispatch<AppDispath>();
@@ -29,12 +30,6 @@ const SearchResultPage = () => {
   const handleLikeToggle = (songId: string) => {
     const isLiked = likedSongIds.has(songId);
     dispatch(toggleLikedSong({ songId, liked: isLiked }));
-  };
-
-  const formatDuration = (seconds: number): string => {
-    const min = Math.floor(seconds / 60);
-    const sec = seconds % 60;
-    return `${min}:${sec.toString().padStart(2, "0")}`;
   };
 
   const filteredSongs = useMemo(() => {
@@ -59,86 +54,16 @@ const SearchResultPage = () => {
         overflowY: "auto",
       }}
     >
-      <h2 className="mb-3">Songs</h2>
+      <h2 className="my-3">Songs</h2>
 
       {filteredSongs.length === 0 ? (
         <p>No matching songs found.</p>
       ) : (
-        <div className="overflow-auto rounded">
-          <table className="table table-hover table-borderless text-white align-middle table_custom">
-            <tbody>
-              {filteredSongs.map((song, index) => (
-                <tr key={song._id}>
-                  <td>
-                    <div className="d-flex align-items-center gap-3">
-                      <img
-                        src={song.imgUrl}
-                        alt={song.title}
-                        className="rounded"
-                        style={{
-                          width: "40px",
-                          height: "40px",
-                          objectFit: "cover",
-                        }}
-                      />
-                      <div>
-                        <div className="text-white text-truncate">
-                          {song.title}
-                        </div>
-                        {song.artist && (
-                          <div className="text-muted small text-truncate">
-                            <Link
-                              to={`/artist/${
-                                typeof song.artist === "string"
-                                  ? song.artist
-                                  : song.artist._id
-                              }`}
-                              className="text-decoration-none text-muted"
-                            >
-                              {typeof song.artist === "string"
-                                ? song.artist
-                                : song.artist.name}
-                            </Link>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </td>
-
-                  <td className="text-end text-muted">
-                    {formatDuration(song.duration)}
-                  </td>
-                  <td className="text-end">
-                    <motion.span
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleLikeToggle(song._id);
-                      }}
-                      whileTap={{ scale: 1.3, rotate: 10 }}
-                      transition={{
-                        type: "spring",
-                        stiffness: 300,
-                        damping: 10,
-                      }}
-                      style={{ cursor: "pointer", display: "inline-block" }}
-                    >
-                      <FontAwesomeIcon
-                        icon={
-                          likedSongIds.has(song._id) ? solidHeart : regularHeart
-                        }
-                        className={`me-2 ${
-                          likedSongIds.has(song._id)
-                            ? "text-danger"
-                            : "text-white"
-                        }`}
-                      />
-                    </motion.span>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <SongTable
+          songs={filteredSongs}
+          likedSongIds={likedSongIds}
+          onLikeToggle={handleLikeToggle}
+        />
       )}
     </div>
   );

@@ -4,8 +4,22 @@ import LeftSidebar from "../components/navigations/LeftSidebar";
 import { ResizableBox } from "react-resizable";
 import "react-resizable/css/styles.css";
 import AudioPlayer from "./components/AudioPlayer";
+import PlaybackControls from "./components/PlaybackControls";
+import { useEffect, useState } from "react";
 
 export default function RootLayout() {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
   const CustomHandleE = ({ ...restProps }) => (
     <div className="custom-handle custom-handle-e" {...restProps} />
   );
@@ -23,7 +37,7 @@ export default function RootLayout() {
         <MainNavigation />
       </header>
 
-    <AudioPlayer />
+      <AudioPlayer />
 
       {/* Left side */}
       <div className="flex-grow-1 d-flex" style={{ minHeight: 0 }}>
@@ -50,22 +64,28 @@ export default function RootLayout() {
           <Outlet />
         </div>
 
-        <ResizableBox
-          width={100}
-          axis="x"
-          minConstraints={[100, 0]}
-          maxConstraints={[400, 0]}
-          resizeHandles={["w"]}
-          handle={<CustomHandleW />}
-          className="p-2"
-          style={{ height: "100%" }} // ensure fills height
-        >
-          <div
-            className="h-100 bg-dark text-white"
-            style={{ minHeight: "100%" }}
-          ></div>
-        </ResizableBox>
+        {!isMobile && (
+          <>
+            <ResizableBox
+              width={100}
+              axis="x"
+              minConstraints={[100, 0]}
+              maxConstraints={[400, 0]}
+              resizeHandles={["w"]}
+              handle={<CustomHandleW />}
+              className="p-2"
+              style={{ height: "100%" }} // ensure fills height
+            >
+              <div
+                className="h-100 bg-dark text-white"
+                style={{ minHeight: "100%" }}
+              ></div>
+            </ResizableBox>
+          </>
+        )}
       </div>
+
+      <PlaybackControls />
     </div>
   );
 }

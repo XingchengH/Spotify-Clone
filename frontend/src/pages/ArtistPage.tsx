@@ -4,7 +4,6 @@ import type { AppDispath, RootState } from "../store/store";
 import { fetchArtistById } from "../store/slices/artistSlice";
 import { fetchSongs, type Song } from "../store/slices/songsSlice";
 import { useParams } from "react-router-dom";
-import PlayButton from "../components/button/PlayButton";
 import { axiosInstance } from "../lib/axios";
 import {
   fetchUserFollowedArtists,
@@ -33,9 +32,8 @@ export default function ArtistPage() {
   }, [dispatch, artistId]);
 
   useEffect(() => {
-    dispatch(fetchSongs())
-  }, [dispatch])
-
+    dispatch(fetchSongs());
+  }, [dispatch]);
 
   const artistSongs: Song[] = allSongs.filter(
     (song) => song.artist?._id === artistId
@@ -90,7 +88,8 @@ export default function ArtistPage() {
 
       {/* Action buttons */}
       <div className="m-3 d-flex gap-3 align-items-center">
-        <PlayButton />
+        {/* <PlayButton/> */}
+
         <button
           onClick={handleFollow}
           className="btn btn-outline-primary rounded-pill px-4"

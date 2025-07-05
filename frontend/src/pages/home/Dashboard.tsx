@@ -8,6 +8,7 @@ import {
 import type { AppDispath, RootState } from "../../store/store";
 import FeatureSection from "./components/FeatureSection";
 import SectionGrid from "./components/SectionGrid";
+import { initializeQueue } from "../../store/slices/usePlayerSlice";
 
 export default function Dashboard() {
   const dispatch = useDispatch<AppDispath>();
@@ -28,6 +29,13 @@ export default function Dashboard() {
     dispatch(fetchTrendingSongs());
   }, [dispatch]);
 
+  useEffect(() => {
+    if (madeForYou.length > 0 && featured.length > 0 && trending.length > 0) {
+      const allSongs = [...madeForYou, ...featured, ...trending];
+      dispatch(initializeQueue(allSongs));
+    }
+  }, [madeForYou, featured, trending, dispatch]);
+
   const currentHour = new Date().getHours();
   const greeting =
     currentHour < 12
@@ -43,7 +51,7 @@ export default function Dashboard() {
         background: "linear-gradient(to bottom,#18181b,rgb(28, 28, 34))",
       }}
     >
-      <div className="overflow-auto" style={{ height: "calc(100vh - 80px)" }}>
+      <div className="overflow-auto" style={{ height: "calc(100vh - 165px)" }}>
         <div className="p-4 p-sm-6">
           <h1 className="display-5 fw-bold mb-4">{greeting}</h1>
           {userId && (
