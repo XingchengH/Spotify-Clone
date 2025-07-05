@@ -44,7 +44,7 @@ export default function SongTable({
     <div
       className="backdrop-blur-sm overflow-auto m-2 rounded text-truncate p-2"
       style={{
-        maxHeight: "calc(100vh - 449px)",
+        maxHeight: "calc(100vh - 600px)",
       }}
     >
       <table className="table table-hover table-borderless text-white align-middle mb-0 table_custom">

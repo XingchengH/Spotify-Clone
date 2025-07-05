@@ -77,7 +77,12 @@ export default function PlaybackControls() {
 
   return (
     <footer className="d-flex align-items-center justify-content-between p-3 bg-dark text-white rounded">
-      <div className="d-flex align-items-center">
+      <div
+        className="d-flex align-items-center"
+        style={{
+          minWidth: "300px",
+        }}
+      >
         {currentSong && (
           <>
             <img
@@ -159,7 +164,13 @@ export default function PlaybackControls() {
         </div>
       </div>
       {/* Valume control */}
-      <div className="d-flex align-items-center justify-content-between">
+      <div
+        className="d-flex align-items-center justify-content-between"
+        style={{
+          maxWidth: "300px",
+          width: "100%",
+        }}
+      >
         <div className="d-flex align-items-center gap-2">
           <button className="btn btn-secondary btn-sm bg-transparent border-0">
             <FontAwesomeIcon icon={faMicrophone} />

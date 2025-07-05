@@ -23,18 +23,32 @@ export default function Dashboard() {
   } = useSelector((state: RootState) => state.songs);
   const userId = useSelector((state: RootState) => state.user.user?.id);
 
-  useEffect(() => {
-    dispatch(fetchFeaturedSongs());
-    dispatch(fetchMadeForYouSongs());
-    dispatch(fetchTrendingSongs());
-  }, [dispatch]);
+  const queue = useSelector((state: RootState) => state.playerSongs.queue);
 
   useEffect(() => {
-    if (madeForYou.length > 0 && featured.length > 0 && trending.length > 0) {
+    if (featuredStatus === "idle") {
+      dispatch(fetchFeaturedSongs());
+    }
+
+    if (madeForYouStatus === "idle") {
+      dispatch(fetchMadeForYouSongs());
+    }
+    if (trendingStatus === "idle") {
+      dispatch(fetchTrendingSongs());
+    }
+  }, [dispatch, featuredStatus, madeForYouStatus, trendingStatus]);
+
+  useEffect(() => {
+    if (
+      madeForYou.length > 0 &&
+      featured.length > 0 &&
+      trending.length > 0 &&
+      queue.length === 0
+    ) {
       const allSongs = [...madeForYou, ...featured, ...trending];
       dispatch(initializeQueue(allSongs));
     }
-  }, [madeForYou, featured, trending, dispatch]);
+  }, [madeForYou, featured, trending, queue, dispatch]);
 
   const currentHour = new Date().getHours();
   const greeting =
