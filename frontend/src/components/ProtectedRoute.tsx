@@ -8,3 +8,8 @@ export default function ProtectedRoute() {
 
   return token ? <Outlet /> : <Navigate to="/login" replace />;
 }
+
+export function AdminRoute() {
+  const user = useSelector((state: RootState) => state.user.user);
+  return user?.isAdmin ? <Outlet /> : <Navigate to="/" replace />;
+}

@@ -9,6 +9,7 @@ type DecodedToken = {
   email?: string;
   imageUrl?: string;
   exp?: number;
+  isAdmin?: boolean;
 };
 
 type Artist = {

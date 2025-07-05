@@ -7,7 +7,7 @@ import UserLayout from "./layout/UserLayout";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import AlbumPage from "./pages/AlbumPage";
-import ProtectedRoute from "./components/ProtectedRoute";
+import ProtectedRoute, { AdminRoute } from "./components/ProtectedRoute";
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispath, RootState } from "./store/store";
 import { useEffect } from "react";
@@ -22,7 +22,6 @@ import SearchResultsPage from "./pages/SearchResultsPage";
 import "./forceCss.css";
 import AdminPage from "./pages/admin/AdminPage";
 import { Toaster } from "react-hot-toast";
-
 
 function App() {
   const dispatch = useDispatch<AppDispath>();
@@ -89,7 +88,10 @@ function App() {
         { path: "search", element: <SearchResultsPage /> },
       ],
     },
-    { path: "admin", element: <AdminPage /> },
+    {
+      element: <AdminRoute />,
+      children: [{ path: "admin", element: <AdminPage /> }],
+    },
   ]);
 
   return (

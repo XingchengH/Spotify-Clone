@@ -23,4 +23,17 @@ const auth = (req, res, next) => {
   }
 };
 
+export const requireAuth = (req, res, next) => {
+  try {
+    const currentUser = req.user;
+    const isAdmin = process.env.ADMIN_EMAIL === currentUser.email;
+    if (!isAdmin) {
+      return res.status(403).json({ message: "Forbidden - User is not admin" });
+    }
+    next();
+  } catch (error) {
+    next(error);
+  }
+};
+
 export default auth;
