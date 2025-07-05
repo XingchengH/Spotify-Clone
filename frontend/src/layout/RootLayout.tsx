@@ -6,9 +6,15 @@ import "react-resizable/css/styles.css";
 import AudioPlayer from "./components/AudioPlayer";
 import PlaybackControls from "./components/PlaybackControls";
 import { useEffect, useState } from "react";
+import AudioInfo from "./components/AudioInfo";
+import { useSelector } from "react-redux";
+import type { RootState } from "../store/store";
 
 export default function RootLayout() {
   const [isMobile, setIsMobile] = useState(false);
+  const currentSong = useSelector(
+    (state: RootState) => state.playerSongs.currentSong
+  );
 
   useEffect(() => {
     const checkMobile = () => {
@@ -66,21 +72,20 @@ export default function RootLayout() {
 
         {!isMobile && (
           <>
-            <ResizableBox
-              width={100}
-              axis="x"
-              minConstraints={[100, 0]}
-              maxConstraints={[400, 0]}
-              resizeHandles={["w"]}
-              handle={<CustomHandleW />}
-              className="p-2"
-              style={{ height: "100%" }} // ensure fills height
-            >
-              <div
-                className="h-100 bg-dark text-white"
-                style={{ minHeight: "100%" }}
-              ></div>
-            </ResizableBox>
+            {currentSong && (
+              <ResizableBox
+                width={125}
+                axis="x"
+                minConstraints={[125, 0]}
+                maxConstraints={[250, 0]}
+                resizeHandles={["w"]}
+                handle={<CustomHandleW />}
+                className="p-2"
+                style={{ height: "100%" }}
+              >
+                <AudioInfo />
+              </ResizableBox>
+            )}
           </>
         )}
       </div>
