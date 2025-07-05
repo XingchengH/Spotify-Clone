@@ -19,7 +19,10 @@ import { fetchUserFollowedArtists } from "./store/slices/userSlice";
 import EditProfile from "./pages/EditProfile";
 import UserProfile from "./pages/UserProfile";
 import SearchResultsPage from "./pages/SearchResultsPage";
-import './forceCss.css'
+import "./forceCss.css";
+import AdminPage from "./pages/admin/AdminPage";
+import { Toaster } from "react-hot-toast";
+
 
 function App() {
   const dispatch = useDispatch<AppDispath>();
@@ -86,9 +89,15 @@ function App() {
         { path: "search", element: <SearchResultsPage /> },
       ],
     },
+    { path: "admin", element: <AdminPage /> },
   ]);
 
-  return <RouterProvider router={router}></RouterProvider>;
+  return (
+    <>
+      <RouterProvider router={router}></RouterProvider>
+      <Toaster />
+    </>
+  );
 }
 
 export default App;

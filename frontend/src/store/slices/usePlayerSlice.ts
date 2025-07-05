@@ -1,5 +1,6 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import type { Song } from "./songsSlice";
+import toast from "react-hot-toast";
 
 export interface PlayerState {
   currentSong: Song | null;
@@ -34,12 +35,32 @@ const playerSongs = createSlice({
       state.currentSongIdx = startIdx;
       state.currentSong = songs[startIdx] || null;
       state.isPlaying = true;
+      toast.success(
+        `Now playing: ${state.currentSong?.title || "No song selected"}`,
+        {
+          duration: 3000,
+          position: "bottom-right",
+        }
+      );
     },
     setCurrentSong: (state, action: PayloadAction<Song | null>) => {
       state.currentSong = action.payload;
     },
     togglePlay: (state) => {
       state.isPlaying = !state.isPlaying;
+      toast.success(
+        `${state.isPlaying && "Playing"}: ${
+          state.currentSong?.title || "No song selected"
+        }`,
+        {
+          duration: 3000,
+          position: "bottom-right",
+        }
+      );
+      // when pause no toast
+      if (!state.isPlaying) {
+        toast.dismiss();
+      }
     },
     playNext: (state) => {
       if (state.queue.length === 0) return;

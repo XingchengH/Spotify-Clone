@@ -62,6 +62,7 @@ export default function SongTable({
               <tr
                 key={song._id}
                 className="bg-transparent"
+                style={{cursor: "pointer" }}
                 onClick={() => handlePlaySong(index)}
               >
                 {isCurrentSong ? (
@@ -100,6 +101,7 @@ export default function SongTable({
                                 : song.artist._id
                             }`}
                             className="text-decoration-none text-muted"
+                            onClick={(e) => e.stopPropagation()}
                           >
                             {typeof song.artist === "string"
                               ? song.artist
