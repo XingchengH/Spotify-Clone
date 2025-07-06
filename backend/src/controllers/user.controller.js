@@ -27,7 +27,6 @@ export const getCurrentUser = async (req, res, next) => {
   }
 };
 
-
 export const getLikedSongs = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -47,11 +46,13 @@ export const getLikedSongs = async (req, res) => {
 export const updateUserProfile = async (req, res) => {
   try {
     const { username, email, password } = req.body;
+    const userId = req.params.id;
 
     const updates = {};
 
     if (username) updates.username = username;
     if (email) updates.email = email;
+    if (req.body.imageUrl) updates.imageUrl = req.body.imageUrl;
 
     if (password) {
       const salt = await bcrypt.genSalt(10);
@@ -59,7 +60,7 @@ export const updateUserProfile = async (req, res) => {
     }
 
     const updateUser = await User.findByIdAndUpdate(
-      req.params.id,
+      userId,
       { $set: updates },
       { new: true, runValidators: true }
     ).select("-password");

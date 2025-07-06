@@ -2,15 +2,18 @@ import { useSelector } from "react-redux";
 import type { RootState } from "../store/store";
 import { useEffect, useState } from "react";
 import { axiosInstance } from "../lib/axios";
+import toast from "react-hot-toast";
 
 export default function EditProfile() {
   const profile = useSelector((state: RootState) => state.user.profile);
   const userId = useSelector((state: RootState) => state.user.user?.id);
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [formData, setFormData] = useState({
     username: "",
     email: "",
     password: "",
   });
+
 
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -42,12 +45,32 @@ export default function EditProfile() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
+      let imageUrl;
+
+      if (avatarFile) {
+        const uploadData = new FormData();
+        uploadData.append("avatar", avatarFile);
+
+        const res = await axiosInstance.post("/users/uploadAvatar", uploadData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
+        imageUrl = res.data.url;
+      }
+
+      const updatePayload = {
+        ...formData,
+        ...(imageUrl && { imageUrl }),
+      };
+
       if (!profile?._id) return;
-      await axiosInstance.put(`/users/${userId}`, formData);
-      alert("Profile updated successfully!");
+
+      await axiosInstance.put(`/users/${userId}`, updatePayload);
+      toast.success("Profile updated successfully!");
     } catch (err) {
       console.error("Failed to update profile", err);
-      alert("Failed to update profile");
+      toast.error("Failed to update profile");
     }
   };
 
@@ -59,6 +82,34 @@ export default function EditProfile() {
           <p className="m-0 fw-bold">User ID</p>
           <span>{userId}</span>
         </div>
+
+        <label htmlFor="avatar" className="fw-bold">
+          Avatar
+        </label>
+        <input
+          className="form-control mb-2"
+          name="avatar"
+          type="file"
+          id="avatar"
+          accept="image/*"
+          onChange={(e) => {
+            if (e.target.files?.[0]) setAvatarFile(e.target.files[0]);
+          }}
+        />
+
+        {avatarFile && (
+          <img
+            className="img-fluid d-block"
+            src={URL.createObjectURL(avatarFile)}
+            alt="avatar"
+            style={{
+              width: 100,
+              height: 100,
+              objectFit: "cover",
+              marginBottom: 10,
+            }}
+          />
+        )}
 
         <label htmlFor="username" className="fw-bold">
           Username

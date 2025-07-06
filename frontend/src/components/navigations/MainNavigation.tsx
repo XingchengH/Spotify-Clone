@@ -19,6 +19,7 @@ const MainNavigation = () => {
   const [show, setShow] = useState(false);
   const token = useSelector((state: RootState) => state.user.token);
   const dispatch = useDispatch();
+  const isAdmin = useSelector((state: RootState) => state.user?.user?.isAdmin);
 
   const handleLogout = () => {
     dispatch(logout());
@@ -105,6 +106,14 @@ const MainNavigation = () => {
                     <Link className="dropdown-item text-white" to="/account">
                       Edit Profile
                     </Link>
+                    {isAdmin && (
+                      <Link
+                        className="dropdown-item text-white"
+                        to="/admin"
+                      >
+                        Admin Dashboard
+                      </Link>
+                    )}
                     <div className="dropdown-divider"></div>
                     <button
                       className="dropdown-item text-white"
