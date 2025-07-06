@@ -193,20 +193,21 @@ export const deleteSong = async (req, res) => {
   try {
     const songId = req.params.id;
 
-    await Song.findByIdAndDelete(songId);
-
+    
     if (!songId) {
       return res.status(404).json({ message: "Song not found" });
     }
-
+    
     if (songId.albumId) {
       await Album.findByIdAndUpdate(songId.albumId, {
         $pull: { songs: songId._id },
       });
     }
-
+    
     await deleteFromS3(songId.audioUrl);
-    await deleteFromS3(songId.imgUrl);
+    await deleteFromS3(songId.imgUrl)
+    await Song.findByIdAndDelete(songId);
+    
 
     res.status(200).json({ message: "Song deleted successfully" });
   } catch (error) {
