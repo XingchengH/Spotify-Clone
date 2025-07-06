@@ -54,6 +54,8 @@ export const updateUserProfile = async (req, res) => {
     if (email) updates.email = email;
     if (req.body.imageUrl) updates.imageUrl = req.body.imageUrl;
 
+    if (req.body.password === "") delete req.body.password;
+
     if (password) {
       const salt = await bcrypt.genSalt(10);
       updates.password = await bcrypt.hash(password, salt);
