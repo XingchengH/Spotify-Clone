@@ -1,6 +1,6 @@
 import { useSelector } from "react-redux";
 import type { RootState } from "../../store/store";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { axiosInstance } from "../../lib/axios";
 
@@ -34,6 +34,19 @@ export default function AddSongDialog() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const imageRef = useRef<HTMLImageElement | null>(null);
 
+  useEffect(() => {
+    if (files.audio) {
+      const audio = document.createElement("audio");
+      audio.src = URL.createObjectURL(files.audio);
+      audio.addEventListener("loadedmetadata", () => {
+        setNewSong((prev) => ({
+          ...prev,
+          duration: Math.floor(audio.duration),
+        }));
+      });
+    }
+  }, [files.audio]);
+
   const handleSubmit = async () => {
     try {
       if (!files.audio || !files.image) {
@@ -51,8 +64,7 @@ export default function AddSongDialog() {
       formData.append("audioFile", files.audio);
       formData.append("imageFile", files.image);
 
-      //   TODO: Admin axios Request
-      await axiosInstance.post("/admin/songs", formData, {
+      await axiosInstance.post("/songs/admin/songs", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
@@ -72,10 +84,12 @@ export default function AddSongDialog() {
 
       toast.success("Song added successfully!");
     } catch (error) {
-      console.error("Error adding song:", error);
+      console.error(
+        "Error adding song:",
+        error.response?.data || error.message
+      );
       toast.error("Failed to add song. Please try again.");
     }
-    console.log("Submit song:", newSong, files);
   };
 
   return (
@@ -196,6 +210,12 @@ export default function AddSongDialog() {
                       className="form-control"
                       name="image"
                       accept="image/*"
+                      onChange={(e) => {
+                        setFiles({
+                          ...files,
+                          image: e.target.files?.[0] || null,
+                        });
+                      }}
                     />
                   </div>
 

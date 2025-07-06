@@ -13,7 +13,7 @@ export default function AlbumsTabContent() {
         <div className="d-flex align-items-center justify-content-between">
           <div className="d-flex flex-column">
             <h5 className="card-title">Songs Library</h5>
-            <p className="card-text">Manage your songs here.</p>
+            <p className="card-text">Manage your Albums here.</p>
           </div>
           <AddAlbumDialog />
         </div>

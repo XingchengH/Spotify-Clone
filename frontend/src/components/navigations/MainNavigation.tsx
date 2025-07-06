@@ -5,21 +5,28 @@ import { faSpotify } from "@fortawesome/free-brands-svg-icons";
 
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import type { RootState } from "../../store/store";
-import { logout } from "../../store/slices/userSlice";
+import type { AppDispath, RootState } from "../../store/store";
+import { fetchCurrentUser, logout } from "../../store/slices/userSlice";
 import avg from "../../assets/imgs/dummyAvactor.jpg";
 
 import { resetSongs } from "../../store/slices/songsSlice";
 import SearchBar from "../SearchBar";
 import { resetAlbums } from "../../store/slices/albumsSlice";
 import { AnimatePresence, motion } from "motion/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const MainNavigation = () => {
+  const dispatch = useDispatch<AppDispath>();
   const [show, setShow] = useState(false);
   const token = useSelector((state: RootState) => state.user.token);
-  const dispatch = useDispatch();
   const isAdmin = useSelector((state: RootState) => state.user?.user?.isAdmin);
+  const profile = useSelector((state: RootState) => state.user.profile);
+
+  useEffect(() => {
+    if (!profile) {
+      dispatch(fetchCurrentUser());
+    }
+  }, [dispatch, profile]);
 
   const handleLogout = () => {
     dispatch(logout());
@@ -80,7 +87,12 @@ const MainNavigation = () => {
                 style={{ width: "40px", height: "40px" }}
                 bsPrefix="custom-dropdown-toggle"
               >
-                <Image src={avg} roundedCircle width={32} height={32} />
+                <Image
+                  src={profile?.imageUrl ? `${profile?.imageUrl}?t=${Date.now()}` : avg}
+                  roundedCircle
+                  width={32}
+                  height={32}
+                />
               </Dropdown.Toggle>
 
               <AnimatePresence>
@@ -107,10 +119,7 @@ const MainNavigation = () => {
                       Edit Profile
                     </Link>
                     {isAdmin && (
-                      <Link
-                        className="dropdown-item text-white"
-                        to="/admin"
-                      >
+                      <Link className="dropdown-item text-white" to="/admin">
                         Admin Dashboard
                       </Link>
                     )}

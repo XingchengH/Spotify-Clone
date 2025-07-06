@@ -1,19 +1,19 @@
-import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchCurrentUser } from "../store/slices/userSlice";
 import type { AppDispath, RootState } from "../store/store";
 import fakeAva from "../assets/imgs/dummyAvactor.jpg";
+import { useEffect } from "react";
+import { fetchCurrentUser } from "../store/slices/userSlice";
 
 export default function UserProfile() {
   const dispatch = useDispatch<AppDispath>();
-  const profile = useSelector((state: RootState) => state.user.profile);
+  const profile = useSelector((state: RootState) => state.user?.profile);
   const loading = useSelector((state: RootState) => state.user.loading);
 
   useEffect(() => {
-    if (!profile && !loading) {
+    if (!profile) {
       dispatch(fetchCurrentUser());
     }
-  }, [dispatch, profile, loading]);
+  }, [dispatch, profile]);
 
   if (loading) return <p>Loading user...</p>;
   if (!profile) return <p>No user found.</p>;
@@ -35,8 +35,12 @@ export default function UserProfile() {
         <div className="position-relative overflow-hidden h-100">
           <div className="d-flex p-4 gap-4 pb-4 text-truncate">
             <img
-              src={fakeAva}
-              alt="Fake ava"
+              src={
+                profile?.imageUrl
+                  ? `${profile?.imageUrl}?t=${Date.now()}`
+                  : fakeAva
+              }
+              alt="User avatar"
               className="rounded-circle shadow-lg"
               style={{ width: "240px", height: "240px", objectFit: "cover" }}
             />

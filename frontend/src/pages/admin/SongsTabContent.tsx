@@ -1,10 +1,22 @@
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import AdminSongsTable from "./AdminSongsTable";
-import type { RootState } from "../../store/store";
+import type { AppDispath, RootState } from "../../store/store";
 import AddSongDialog from "./AddSongDialog";
+import { deleteSong } from "../../store/slices/songsSlice";
+import toast from "react-hot-toast";
 
 export default function SongsTabContent() {
+  const dispatch = useDispatch<AppDispath>();
   const songs = useSelector((state: RootState) => state.songs?.songs);
+
+  const handleDeleteSuccess = async (songId: string) => {
+    try {
+      await dispatch(deleteSong(songId)).unwrap();
+      toast.success("Song deleted successfully!");
+    } catch (error) {
+      toast.error("Failed to delete song.");
+    }
+  };
 
   return (
     <div className="card bg-transparent text-white border-0">
@@ -27,6 +39,7 @@ export default function SongsTabContent() {
           <tbody className="align-middle">
             {songs.map((song) => (
               <AdminSongsTable
+                onDeleteSuccess={handleDeleteSuccess}
                 key={song._id}
                 id={song._id}
                 imgUrl={song.imgUrl}

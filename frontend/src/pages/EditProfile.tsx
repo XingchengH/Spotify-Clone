@@ -1,10 +1,12 @@
-import { useSelector } from "react-redux";
-import type { RootState } from "../store/store";
+import { useDispatch, useSelector } from "react-redux";
+import type { AppDispath, RootState } from "../store/store";
 import { useEffect, useState } from "react";
 import { axiosInstance } from "../lib/axios";
 import toast from "react-hot-toast";
+import { fetchCurrentUser } from "../store/slices/userSlice";
 
 export default function EditProfile() {
+  const dispatch = useDispatch<AppDispath>();
   const profile = useSelector((state: RootState) => state.user.profile);
   const userId = useSelector((state: RootState) => state.user.user?.id);
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
@@ -14,12 +16,11 @@ export default function EditProfile() {
     password: "",
   });
 
-
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
         if (!userId) return;
-        const res = await axiosInstance.get(`/users/${userId}`);
+        const res = await axiosInstance.get(`/users/me`);
         const { username = "", email = "" } = res.data;
         setFormData((prev) => ({
           ...prev,
@@ -32,7 +33,7 @@ export default function EditProfile() {
     };
 
     fetchUserProfile();
-  }, [userId]);
+  }, [userId, profile?.imageUrl]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -51,11 +52,15 @@ export default function EditProfile() {
         const uploadData = new FormData();
         uploadData.append("avatar", avatarFile);
 
-        const res = await axiosInstance.post("/users/uploadAvatar", uploadData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        });
+        const res = await axiosInstance.post(
+          "/users/uploadAvatar",
+          uploadData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
         imageUrl = res.data.url;
       }
 
@@ -67,6 +72,7 @@ export default function EditProfile() {
       if (!profile?._id) return;
 
       await axiosInstance.put(`/users/${userId}`, updatePayload);
+      dispatch(fetchCurrentUser());
       toast.success("Profile updated successfully!");
     } catch (err) {
       console.error("Failed to update profile", err);

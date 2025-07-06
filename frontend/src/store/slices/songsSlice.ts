@@ -65,6 +65,21 @@ export const fetchTrendingSongs = createAsyncThunk<Song[]>(
   }
 );
 
+export const deleteSong = createAsyncThunk<string, string>(
+  "songs/deleteSong",
+  async (songId, { rejectWithValue }) => {
+    try {
+      await axiosInstance.delete(`/songs/admin/songs/${songId}`);
+      return songId; // return ID to remove it from state
+    } catch (error: any) {
+      console.error("Failed to delete song:", error);
+      return rejectWithValue(
+        error?.response?.data?.message || "Failed to delete"
+      );
+    }
+  }
+);
+
 const initialState: SongsState = {
   songs: [],
   status: "idle",
@@ -138,6 +153,11 @@ const songsSlice = createSlice({
       })
       .addCase(fetchTrendingSongs.rejected, (state) => {
         state.trendingStatus = "failed";
+      })
+
+      .addCase(deleteSong.fulfilled, (state, action) => {
+        const id = action.payload;
+        state.songs = state.songs.filter((song) => song._id !== id);
       });
   },
 });
