@@ -62,7 +62,9 @@ const SearchResultPage = () => {
             >
               <div className="d-flex flex-column align-items-start mb-2 p-2">
                 <img
-                  src={filteredSongs[0]?.artist?.imgUrl}
+                  src={
+                    filteredSongs[0]?.artist?.imgUrl || filteredSongs[0]?.imgUrl
+                  }
                   alt={filteredSongs[0]?.artist?.name}
                   className="rounded-circle me-2"
                   style={{
