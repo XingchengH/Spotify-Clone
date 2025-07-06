@@ -23,10 +23,10 @@ const MainNavigation = () => {
   const profile = useSelector((state: RootState) => state.user.profile);
 
   useEffect(() => {
-    if (!profile) {
+    if (!profile && token) {
       dispatch(fetchCurrentUser());
     }
-  }, [dispatch, profile]);
+  }, [dispatch, profile, token]);
 
   const handleLogout = () => {
     dispatch(logout());

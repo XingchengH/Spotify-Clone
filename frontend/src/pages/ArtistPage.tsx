@@ -26,6 +26,15 @@ export default function ArtistPage() {
     (state: RootState) => state.user.followedArtists
   );
   const isFollowing = followedArtists.some((a) => a._id === artistId);
+  // if not artistImgUrl, show artist's album cover
+  const albums = useSelector((state: RootState) => state.albums.albums);
+
+  const artistCoverImgUrl = albums.find(
+    (album) => album.artist._id === artistId
+  )?.imgUrl;
+
+  const isArtistImgExists =
+    artistCoverImgUrl !== undefined && artist?.imgUrl === "";
 
   useEffect(() => {
     if (artistId) dispatch(fetchArtistById(artistId));
@@ -68,23 +77,64 @@ export default function ArtistPage() {
           "linear-gradient(to bottom, rgba(80,56,160,0.8), rgba(40,38,80,0.4), rgba(34, 31, 31, 0.8))",
       }}
     >
-      {/* Artist banner */}
-      <div
-        className="w-100 position-relative"
-        style={{
-          backgroundImage: `url(${artist.imgUrl})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center 20%",
-          height: "300px",
-        }}
-      >
+      {/* Artist banner 1 */}
+      {!isArtistImgExists && (
         <div
-          className="text-white position-absolute"
-          style={{ bottom: "30px", left: "20px" }}
+          className="w-100 position-relative"
+          style={{
+            backgroundImage: `url(${artist.imgUrl})`,
+            backgroundSize: "cover",
+            backgroundPosition: "center 20%",
+            height: "300px",
+          }}
         >
-          <h1 className="display-1 fw-bold">{artist.name}</h1>
+          <div
+            className="text-white position-absolute"
+            style={{ bottom: "30px", left: "20px" }}
+          >
+            <h1 className="display-1 fw-bold">{artist.name}</h1>
+          </div>
         </div>
-      </div>
+      )}
+
+      {isArtistImgExists && (
+        <div
+          className="w-100 position-relative"
+          style={{
+            backgroundImage: `url(${artist.imgUrl})`,
+            backgroundSize: "cover",
+            backgroundPosition: "center 20%",
+            height: "300px",
+          }}
+        >
+          <div
+            className="text-white position-absolute z-1"
+            style={{ bottom: "30px", left: "20px" }}
+          >
+            <h1
+              className="display-1 fw-bold"
+              style={{
+                opacity: 0.6,
+                textShadow: "2px 2px 8px rgba(0, 0, 0, 0.6)",
+              }}
+            >
+              {artist.name}
+            </h1>
+          </div>
+          <img
+            src={artistCoverImgUrl}
+            alt="artist cover"
+            className="rounded-circle position-absolute"
+            style={{
+              width: "240px",
+              height: "240px",
+              objectFit: "cover",
+              bottom: "20px",
+              left: "20px",
+            }}
+          />
+        </div>
+      )}
 
       {/* Action buttons */}
       <div className="m-3 d-flex gap-3 align-items-center">
