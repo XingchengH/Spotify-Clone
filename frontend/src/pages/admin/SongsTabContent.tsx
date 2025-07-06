@@ -11,7 +11,7 @@ export default function SongsTabContent() {
 
   const handleDeleteSuccess = async (songId: string) => {
     try {
-      await dispatch(deleteSong(songId)).unwrap();
+      await dispatch(deleteSong(songId));
       toast.success("Song deleted successfully!");
     } catch (error) {
       toast.error("Failed to delete song.");

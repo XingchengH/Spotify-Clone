@@ -1,7 +1,6 @@
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { axiosInstance } from "../../lib/axios";
-import toast from "react-hot-toast";
 
 interface AdminSongsTableProps {
   imgUrl?: string;

@@ -35,7 +35,7 @@ const songUpload = multer({
       const ext = path.extname(file.originalname);
       const folder =
         file.fieldname === "audioFile" ? "songs/audio" : "songs/images";
-      const filename = `${folder}/${Date.now()}-${file.originalname}`;
+      const filename = `${folder}/${Date.now()}-${ext}`;
       cb(null, filename);
     },
   }),
@@ -47,7 +47,6 @@ const deleteFromS3 = async (url) => {
   const bucket = process.env.S3_BUCKET;
   const urlObj = new URL(url);
   const key = decodeURIComponent(urlObj.pathname.replace(/^\/+/, ""));
-  console.log("🧹 Deleting from S3 key:", key);
 
   try {
     await s3.send(

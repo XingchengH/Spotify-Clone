@@ -65,20 +65,20 @@ export const fetchTrendingSongs = createAsyncThunk<Song[]>(
   }
 );
 
-export const deleteSong = createAsyncThunk<string, string>(
+export const deleteSong = createAsyncThunk(
   "songs/deleteSong",
-  async (songId, { rejectWithValue }) => {
+  async (songId: string, thunkAPI) => {
     try {
-      await axiosInstance.delete(`/songs/admin/songs/${songId}`);
-      return songId; // return ID to remove it from state
-    } catch (error: any) {
-      console.error("Failed to delete song:", error);
-      return rejectWithValue(
-        error?.response?.data?.message || "Failed to delete"
-      );
+      const res = await axiosInstance.delete(`/songs/admin/songs/${songId}`);
+      console.log("DELETE song success", res.status, res.data);
+      return songId;
+    } catch (err) {
+      console.error("DELETE song failed", err.response?.data || err);
+      return thunkAPI.rejectWithValue("Delete failed");
     }
   }
 );
+
 
 const initialState: SongsState = {
   songs: [],
