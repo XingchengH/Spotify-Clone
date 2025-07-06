@@ -46,7 +46,7 @@ const deleteFromS3 = async (url) => {
 
   const bucket = process.env.S3_BUCKET;
   const urlObj = new URL(url);
-  const key = decodeURIComponent(urlObj.pathname.slice(1)); // Removes the leading "/"
+  const key = decodeURIComponent(urlObj.pathname.slice(1));
 
   try {
     await s3.send(
