@@ -3,6 +3,7 @@ import type { RootState } from "../../store/store";
 import { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { axiosInstance } from "../../lib/axios";
+import LoadingSpinner from "../../components/Spinner";
 
 interface NewSong {
   title: string;
@@ -15,6 +16,7 @@ export default function AddSongDialog() {
   const albums = useSelector((state: RootState) => state.albums?.albums);
 
   const [songDialogOpen, setSongDialogOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [newSong, setNewSong] = useState<NewSong>({
     title: "",
@@ -52,7 +54,7 @@ export default function AddSongDialog() {
       if (!files.audio || !files.image) {
         return toast.error("Please select both audio and image files.");
       }
-
+      setIsSubmitting(true);
       const formData = new FormData();
 
       formData.append("title", newSong.title);
@@ -82,6 +84,7 @@ export default function AddSongDialog() {
         image: null,
       });
 
+      setSongDialogOpen(false);
       toast.success("Song added successfully!");
     } catch (error) {
       console.error(
@@ -89,6 +92,8 @@ export default function AddSongDialog() {
         error.response?.data || error.message
       );
       toast.error("Failed to add song. Please try again.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -113,6 +118,9 @@ export default function AddSongDialog() {
             role="document"
             onClick={(e) => e.stopPropagation()}
           >
+            {isSubmitting && (
+              <LoadingSpinner fullscreen text="Adding Song" size="lg" />
+            )}
             <div className="modal-content">
               <div className="modal-header d-flex justify-content-between align-items-center">
                 <h5 className="modal-title">Add New Song</h5>

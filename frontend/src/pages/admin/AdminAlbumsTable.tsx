@@ -1,9 +1,9 @@
-import { useDispatch, useSelector } from "react-redux";
-import type { AppDispath, RootState } from "../../store/store";
-import { useEffect } from "react";
-import { fetchAlbums } from "../../store/slices/albumsSlice";
+import { useDispatch } from "react-redux";
+import type { AppDispath } from "../../store/store";
+import { deleteAlbum } from "../../store/slices/albumsSlice";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
+import toast from "react-hot-toast";
 
 interface AdminAlbumsTableProps {
   imgUrl?: string;
@@ -20,13 +20,13 @@ export default function AdminAlbumsTable({
 }: AdminAlbumsTableProps) {
   const dispatch = useDispatch<AppDispath>();
 
-  useEffect(() => {
-    dispatch(fetchAlbums());
-  }, [dispatch]);
-
-  const deleteAlbum = (albumId: string) => {
-    // todos
-    console.log(`Delete album with ID: ${albumId}`);
+  const handleDelete = async (albumId: string) => {
+    try {
+      await dispatch(deleteAlbum(albumId));
+      toast.success("Album deleted successfully!");
+    } catch (error) {
+      toast.error("Failed to delete album.");
+    }
   };
 
   return (
@@ -44,7 +44,7 @@ export default function AdminAlbumsTable({
       <td>
         <button
           className="btn btn-danger bg-transparent border-0 text-danger"
-          onClick={() => deleteAlbum(id)}
+          onClick={() => handleDelete(id)}
         >
           <FontAwesomeIcon icon={faTrash} />
         </button>

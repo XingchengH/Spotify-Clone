@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
 import { axiosInstance } from "../../lib/axios";
 import toast from "react-hot-toast";
+import LoadingSpinner from "../../components/Spinner";
 
 export default function AddAlbumDialog() {
   const [albumDialogOpen, setAlbumDialogOpen] = useState(false);
@@ -12,6 +13,7 @@ export default function AddAlbumDialog() {
   });
 
   const [imgFile, setImgFile] = useState<File | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleImageSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -22,13 +24,14 @@ export default function AddAlbumDialog() {
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    setIsSubmitting(true);
     try {
       const formData = new FormData();
       formData.append("title", newAlbum.title);
       formData.append("artist", newAlbum.artist);
       formData.append("releaseYear", newAlbum.releaseYear.toString());
-      formData.append("img", imgFile!);
-      await axiosInstance.post("/admin/albums", formData);
+      formData.append("albumImg", imgFile!);
+      await axiosInstance.post("/albums/admin/albums", formData);
       setNewAlbum({
         title: "",
         artist: "",
@@ -40,6 +43,8 @@ export default function AddAlbumDialog() {
     } catch (error) {
       console.error(error);
       toast.error("Failed to add album.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -64,6 +69,14 @@ export default function AddAlbumDialog() {
             role="document"
             onClick={(e) => e.stopPropagation()}
           >
+            {isSubmitting && (
+              <LoadingSpinner
+                centered
+                fullscreen
+                text="Adding Album"
+                size="lg"
+              />
+            )}
             <div className="modal-content">
               <div className="modal-header d-flex justify-content-between align-items-center">
                 <h5 className="modal-title">Add New Album</h5>

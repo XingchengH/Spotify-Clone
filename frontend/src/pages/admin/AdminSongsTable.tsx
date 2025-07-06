@@ -1,13 +1,16 @@
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { axiosInstance } from "../../lib/axios";
+import { useDispatch } from "react-redux";
+import type { AppDispath } from "../../store/store";
+import { deleteSong } from "../../store/slices/songsSlice";
+import toast from "react-hot-toast";
 
 interface AdminSongsTableProps {
   imgUrl?: string;
   id: string;
   title: string;
   artist: string;
-  onDeleteSuccess?: (deletedId: string) => void;
 }
 
 export default function AdminSongsTable({
@@ -15,16 +18,15 @@ export default function AdminSongsTable({
   title,
   id,
   artist,
-  onDeleteSuccess,
 }: AdminSongsTableProps) {
-  const deleteSong = async (songId: string) => {
+  const dispatch = useDispatch<AppDispath>();
+
+  const handleDelete = async (songId: string) => {
     try {
-      await axiosInstance.delete(`/songs/admin/songs/${songId}`);
-      if (onDeleteSuccess) {
-        onDeleteSuccess(songId);
-      }
+      await dispatch(deleteSong(songId));
+      toast.success("Song deleted successfully!");
     } catch (error) {
-      console.error("Error deleting song:", error);
+      toast.error("Failed to delete song.");
     }
   };
 
@@ -43,7 +45,7 @@ export default function AdminSongsTable({
       <td>
         <button
           className="btn btn-danger bg-transparent border-0 text-danger"
-          onClick={() => deleteSong(id)}
+          onClick={() => handleDelete(id)}
         >
           <FontAwesomeIcon icon={faTrash} />
         </button>

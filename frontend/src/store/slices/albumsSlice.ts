@@ -27,6 +27,18 @@ export const fetchAlbumById = createAsyncThunk<Album, string>(
   }
 );
 
+export const deleteAlbum = createAsyncThunk(
+  "albums/deleteAlbum",
+  async (albumId: string, thunkAPI) => {
+    try {
+      await axiosInstance.delete(`/albums/admin/albums/${albumId}`);
+      return albumId;
+    } catch (err) {
+      return thunkAPI.rejectWithValue("Failed to delete album");
+    }
+  }
+);
+
 const albumsSlice = createSlice({
   name: "albums",
   initialState: {
@@ -70,6 +82,11 @@ const albumsSlice = createSlice({
         state.selectedAlbumStatus = "failed";
         state.selectedAlbum = null;
         state.error = action.error.message || "Failed to fetch album";
+      })
+      .addCase(deleteAlbum.fulfilled, (state, action) => {
+        state.albums = state.albums.filter(
+          (album) => album._id !== action.payload
+        );
       });
   },
 });

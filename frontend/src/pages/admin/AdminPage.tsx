@@ -3,7 +3,7 @@ import DashbordStats from "./DashboardStats";
 import Header from "./Header";
 import AlbumsTabContent from "./AlbumsTabContent";
 import SongsTabContent from "./SongsTabContent";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import type { AppDispath } from "../../store/store";
 import { fetchSongs } from "../../store/slices/songsSlice";
 import { fetchAlbums } from "../../store/slices/albumsSlice";
@@ -13,7 +13,6 @@ export default function AdminPage() {
 
   const dispatch = useDispatch<AppDispath>();
 
-  
   useEffect(() => {
     dispatch(fetchSongs());
     dispatch(fetchAlbums());

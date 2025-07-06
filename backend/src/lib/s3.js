@@ -61,4 +61,19 @@ const deleteFromS3 = async (url) => {
   }
 };
 
-export { upload, songUpload, deleteFromS3 };
+
+const albumUpload = multer({
+  storage: multerS3({
+    s3,
+    bucket: process.env.S3_BUCKET,
+    contentType: multerS3.AUTO_CONTENT_TYPE,
+    key: (req, file, cb) => {
+      const ext = path.extname(file.originalname);
+      const folder = "albums";
+      const filename = `${folder}/${Date.now()}-${ext}`;
+      cb(null, filename);
+    },
+  }),
+});
+
+export { upload, songUpload, deleteFromS3, albumUpload };
