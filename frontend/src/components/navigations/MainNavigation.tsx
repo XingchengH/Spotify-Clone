@@ -39,7 +39,7 @@ const MainNavigation = () => {
   const handleLogout = () => {
     dispatch(logout());
     dispatch(resetAlbums());
-    dispatch(resetSongs());
+    dispatch(resetSongs());    
   };
 
   useEffect(() => {

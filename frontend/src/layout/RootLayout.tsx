@@ -5,16 +5,15 @@ import { ResizableBox } from "react-resizable";
 import "react-resizable/css/styles.css";
 import AudioPlayer from "./components/AudioPlayer";
 import PlaybackControls from "./components/PlaybackControls";
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import AudioInfo from "./components/AudioInfo";
 import { useSelector } from "react-redux";
 import type { RootState } from "../store/store";
 
 export default function RootLayout() {
   const [isMobile, setIsMobile] = useState(false);
-  const currentSong = useSelector(
-    (state: RootState) => state.playerSongs.currentSong
-  );
+  const { currentSong } = useSelector((state: RootState) => state.playerSongs);
+  const token = useSelector((state: RootState) => state.user.token);
 
   useEffect(() => {
     const checkMobile = () => {
@@ -47,18 +46,20 @@ export default function RootLayout() {
 
       {/* Left side */}
       <div className="flex-grow-1 d-flex" style={{ minHeight: 0 }}>
-        <ResizableBox
-          width={100}
-          axis="x"
-          minConstraints={[125, 0]}
-          maxConstraints={[400, 0]}
-          resizeHandles={["e"]}
-          handle={<CustomHandleE />}
-          className="p-2"
-          style={{ height: "100%" }} // ensure fills height
-        >
-          <LeftSidebar />
-        </ResizableBox>
+        {token && (
+          <ResizableBox
+            width={100}
+            axis="x"
+            minConstraints={[125, 0]}
+            maxConstraints={[400, 0]}
+            resizeHandles={["e"]}
+            handle={<CustomHandleE />}
+            className="p-2"
+            style={{ height: "100%" }} // ensure fills height
+          >
+            <LeftSidebar />
+          </ResizableBox>
+        )}
 
         <div
           className="flex-grow-1 p-2"

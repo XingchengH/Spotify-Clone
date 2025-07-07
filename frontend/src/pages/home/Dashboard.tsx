@@ -43,12 +43,13 @@ export default function Dashboard() {
       madeForYou.length > 0 &&
       featured.length > 0 &&
       trending.length > 0 &&
-      queue.length === 0
+      queue.length === 0 &&
+      userId
     ) {
       const allSongs = [...madeForYou, ...featured, ...trending];
       dispatch(initializeQueue(allSongs));
     }
-  }, [madeForYou, featured, trending, queue, dispatch]);
+  }, [madeForYou, featured, trending, queue, userId, dispatch]);
 
   const currentHour = new Date().getHours();
   const greeting =
