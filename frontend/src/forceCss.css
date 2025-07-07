@@ -68,6 +68,10 @@ small {
   color: var(--primary-color) !important;
 }
 
+.hover-bg:hover * {
+  color: var(--primary-color) !important;
+}
+
 .bg-secondary {
   background-color: var(--secondary-color) !important;
 }
@@ -110,6 +114,11 @@ small {
 .btn-outline-primary {
   color: var(--text-primary-color) !important;
   border-color: var(--text-primary-color) !important;
+}
+
+.btn-outline-primary:hover {
+  color: var(--text-primary-color-hover) !important;
+  border-color: var(--text-primary-color-hover) !important;
 }
 
 /* Table text, bg, border */
