@@ -154,9 +154,8 @@ small {
 }
 
 /* Custom */
-
-.table_custom {
-  --bs-table-bg: transparent !important;
+.cursor-pointer {
+  cursor: pointer;
 }
 
 .custom-handle-e {

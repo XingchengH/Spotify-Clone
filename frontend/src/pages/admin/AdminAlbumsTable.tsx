@@ -30,7 +30,7 @@ export default function AdminAlbumsTable({
   };
 
   return (
-    <tr>
+    <tr className="hover-bg cursor-pointer">
       <td>
         <img
           src={imgUrl}

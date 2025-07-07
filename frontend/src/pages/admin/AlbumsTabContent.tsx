@@ -6,7 +6,6 @@ import AddAlbumDialog from "./AddAlbumDialog";
 export default function AlbumsTabContent() {
   const albums = useSelector((state: RootState) => state.albums?.albums);
 
-
   return (
     <div className="card bg-transparent text-white border-0">
       <div className="card-body">
@@ -17,9 +16,9 @@ export default function AlbumsTabContent() {
           </div>
           <AddAlbumDialog />
         </div>
-        <table className="table mt-3 table_custom table-bottom text-white">
+        <table className="table mt-3 table-bottom text-white">
           <thead>
-            <tr className="table_custom">
+            <tr>
               <th scope="col">Title</th>
               <th scope="col">Artist</th>
               <th scope="col">Actions</th>

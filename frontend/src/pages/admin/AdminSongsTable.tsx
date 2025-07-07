@@ -31,7 +31,7 @@ export default function AdminSongsTable({
   };
 
   return (
-    <tr>
+    <tr className="hover-bg cursor-pointer">
       <td>
         <img
           src={imgUrl}
