@@ -1,6 +1,12 @@
 import { Navbar, Container, Dropdown, Image } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faHome, faBell, faUsers } from "@fortawesome/free-solid-svg-icons";
+import {
+  faHome,
+  faBell,
+  faUsers,
+  faSun,
+  faMoon,
+} from "@fortawesome/free-solid-svg-icons";
 import { faSpotify } from "@fortawesome/free-brands-svg-icons";
 
 import { Link } from "react-router-dom";
@@ -22,6 +28,8 @@ const MainNavigation = () => {
   const isAdmin = useSelector((state: RootState) => state.user?.user?.isAdmin);
   const profile = useSelector((state: RootState) => state.user.profile);
 
+  const [isDark, setIsDark] = useState(false);
+
   useEffect(() => {
     if (!profile && token) {
       dispatch(fetchCurrentUser());
@@ -34,13 +42,21 @@ const MainNavigation = () => {
     dispatch(resetSongs());
   };
 
+  useEffect(() => {
+    const theme = localStorage.getItem("theme") || "dark";
+    document.documentElement.setAttribute("data-bs-theme", theme);
+    setIsDark(theme === "dark");
+  }, []);
+
+  const handleThemeChange = () => {
+    setIsDark((prev) => !prev);
+    const newTheme = isDark ? "brown" : "dark";
+    document.documentElement.setAttribute("data-bs-theme", newTheme);
+    localStorage.setItem("theme", newTheme);
+  };
+
   return (
-    <Navbar
-      variant="dark"
-      expand="lg"
-      className="px-3 py-2"
-      style={{ background: "#000" }}
-    >
+    <Navbar expand="lg" className="px-3 py-2" style={{ background: "#000" }}>
       <Container
         fluid
         className="d-flex justify-content-md-between justify-content-sm-start align-items-center gap-4"
@@ -67,6 +83,34 @@ const MainNavigation = () => {
 
         {token ? (
           <div className="d-none d-sm-flex align-items-center gap-4">
+            {/* Theme toggle */}
+            <AnimatePresence mode="wait" initial={false}>
+              {isDark ? (
+                <motion.div
+                  key="sun"
+                  onClick={handleThemeChange}
+                  initial={{ opacity: 0, rotate: -90, scale: 0.8 }}
+                  animate={{ opacity: 1, rotate: 0, scale: 1 }}
+                  exit={{ opacity: 0, rotate: 90, scale: 0.8 }}
+                  transition={{ duration: 0.3 }}
+                  style={{ cursor: "pointer" }}
+                >
+                  <FontAwesomeIcon icon={faSun} color="#ea733d" />
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="moon"
+                  onClick={handleThemeChange}
+                  initial={{ opacity: 0, rotate: 90, scale: 0.8 }}
+                  animate={{ opacity: 1, rotate: 0, scale: 1 }}
+                  exit={{ opacity: 0, rotate: -90, scale: 0.8 }}
+                  transition={{ duration: 0.3 }}
+                  style={{ cursor: "pointer" }}
+                >
+                  <FontAwesomeIcon icon={faMoon} color="#6daac7" />
+                </motion.div>
+              )}
+            </AnimatePresence>
             <FontAwesomeIcon
               icon={faBell}
               color="white"
@@ -79,7 +123,6 @@ const MainNavigation = () => {
               title="Friends"
               cursor="pointer"
             />
-
             <Dropdown align="end" show={show} onToggle={() => setShow(!show)}>
               <Dropdown.Toggle
                 variant="dark"
@@ -88,7 +131,11 @@ const MainNavigation = () => {
                 bsPrefix="custom-dropdown-toggle"
               >
                 <Image
-                  src={profile?.imageUrl ? `${profile?.imageUrl}?t=${Date.now()}` : avg}
+                  src={
+                    profile?.imageUrl
+                      ? `${profile?.imageUrl}?t=${Date.now()}`
+                      : avg
+                  }
                   roundedCircle
                   width={32}
                   height={32}

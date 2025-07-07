@@ -53,7 +53,7 @@ export default function SongTable({
         maxHeight: "calc(100vh - 541px)",
       }}
     >
-      <table className="table table-hover table-borderless text-white align-middle mb-0 table_custom">
+      <table className="table table-hover table-borderless text-white align-middle mb-0">
         <thead></thead>
         <tbody>
           {songs.map((song, index) => {
@@ -61,7 +61,6 @@ export default function SongTable({
             return (
               <tr
                 key={song._id}
-                className="bg-transparent"
                 style={{cursor: "pointer" }}
                 onClick={() => handlePlaySong(index)}
               >
@@ -87,7 +86,7 @@ export default function SongTable({
                     <div>
                       <div
                         className={`fw-semibold text-truncate ${
-                          isCurrentSong ? "text-success" : "text-white"
+                          isCurrentSong ? "text-secondary" : "text-white"
                         }`}
                       >
                         {song.title}

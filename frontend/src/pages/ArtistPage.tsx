@@ -74,7 +74,7 @@ export default function ArtistPage() {
       style={{
         zIndex: 0,
         background:
-          "linear-gradient(to bottom, rgba(80,56,160,0.8), rgba(40,38,80,0.4), rgba(34, 31, 31, 0.8))",
+          "linear-gradient(to bottom, var(--bg-rbga-from), var(--bg-rbga-to))",
       }}
     >
       {/* Artist banner 1 */}

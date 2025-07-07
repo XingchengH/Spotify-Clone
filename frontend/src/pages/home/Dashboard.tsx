@@ -62,7 +62,7 @@ export default function Dashboard() {
     <main
       className="rounded overflow-hidden h-100"
       style={{
-        background: "linear-gradient(to bottom,#18181b,rgb(28, 28, 34))",
+        background: "var(--primary-bg-color)",
       }}
     >
       <div className="overflow-auto" style={{ height: "calc(100vh - 165px)" }}>

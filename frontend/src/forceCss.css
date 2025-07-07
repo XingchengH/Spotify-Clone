@@ -1,5 +1,154 @@
-.table_custom { --bs-table-bg: transparent !important; }
+:root,
+[data-bs-theme="dark"],
+[data-bs-theme="brown"] {
+  --bs-table-bg: transparent !important;
+  --bs-table-border-color: transparent !important;
+  --bs-table-hover-bg: transparent !important;
+  --bs-table-hover-border-color: transparent !important;
+}
+/* Brown Theme */
+[data-bs-theme="brown"] {
+  --primary-color: #382020;
+  --secondary-color: #9f4125;
+  --primary-bg-color: #111;
+  --secondary-bg-color: #a77e5c;
+  --text-primary-color: #c1c1b3;
+  --text-primary-color-hover: #414133;
+  --text-secondary-color: #574f49;
+  --bg-rbga-from: var(--primary-bg-color);
+  --bg-rbga-to: var(--secondary-bg-color);
+}
+/* Dark mode */
+[data-bs-theme="dark"] {
+  --primary-color: #0d0d0b;
+  --secondary-color: #041618;
+  --primary-bg-color: #111;
+  --secondary-bg-color: #040b0f;
+  --text-primary-color: #c1c1b3;
+  --text-primary-color-hover: #adb5bf;
+  --text-secondary-color: #574f49;
+  --bg-rbga-from: rgba(80, 56, 160, 0.8);
+  --bg-rbga-to: rgba(34, 31, 31, 0.8);
+}
 
+/* Text */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: var(--text-primary-color) !important;
+}
+
+p {
+  color: var(--text-primary-color) !important;
+}
+
+small {
+  color: var(--text-secondary-color) !important;
+}
+
+.text-white {
+  color: var(--text-primary-color) !important;
+}
+
+.text-muted {
+  color: var(--text-secondary-color) !important;
+}
+
+/* background */
+.bg-dark {
+  background-color: var(--primary-color) !important;
+}
+
+.hover-bg:hover {
+  background-color: var(--text-primary-color-hover) !important;
+  opacity: 0.8 !important;
+  color: var(--primary-color) !important;
+}
+
+.bg-secondary {
+  background-color: var(--secondary-color) !important;
+}
+
+/* Button */
+
+.btn-primary {
+  background-color: var(--text-primary-color) !important;
+  color: var(--primary-color) !important;
+}
+
+.btn-primary:hover {
+  background-color: var(--text-primary-color-hover) !important;
+  color: var(--primary-color) !important;
+}
+
+.btn:hover {
+  background-color: var(--text-primary-color-hover) !important;
+  color: var(--primary-color) !important;
+}
+
+.btn-secondary {
+  color: var(--text-primary-color) !important;
+  border-color: var(--text-primary-color) !important;
+  background-color: var(--primary-color) !important;
+}
+
+.btn-secondary:hover {
+  color: var(--text-primary-color-hover) !important;
+  border-color: var(--text-primary-color-hover) !important;
+  background-color: var(--primary-color) !important;
+}
+
+.btn-secondary:active {
+  color: var(--text-primary-color-hover) !important;
+  border-color: var(--text-primary-color-hover) !important;
+  background-color: var(--primary-color) !important;
+}
+
+.btn-outline-primary {
+  color: var(--text-primary-color) !important;
+  border-color: var(--text-primary-color) !important;
+}
+
+/* Table text, bg, border */
+/* make text inside table color primary */
+
+.table {
+  --bs-table-bg: transparent !important;
+  --bs-table-border-color: var(--text-primary-color) !important;
+}
+
+.table th,
+.table td {
+  color: var(--text-primary-color) !important;
+  border-color: var(--text-primary-color) !important;
+}
+
+.table-hover tbody tr:hover td,
+.table-hover tbody tr:hover th {
+  color: var(--text-primary-color-hover) !important;
+  border-color: var(--text-primary-color-hover) !important;
+}
+
+/* Nav */
+.nav-tabs .nav-link.active,
+.nav-tabs .nav-item.show .nav-link {
+  color: var(--text-primary-color) !important;
+  background-color: var(--primary-color) !important;
+}
+
+/* input */
+.form-control::placeholder {
+  color: var(--text-primary-color) !important;
+}
+
+/* Custom */
+
+.table_custom {
+  --bs-table-bg: transparent !important;
+}
 
 .custom-handle-e {
   position: absolute;
@@ -13,7 +162,7 @@
 
 .custom-handle-w {
   position: absolute;
-  left: 0; 
+  left: 0;
   top: 0;
   width: 8px;
   height: 100%;

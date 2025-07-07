@@ -22,7 +22,7 @@ export default function AdminPage() {
     <div
       className="container-fluid h-100"
       style={{
-        background: "linear-gradient(to bottom,rgb(36, 31, 31),rgb(0, 0, 0))",
+        background: "linear-gradient(to bottom, var(--primary-color), var(--secondary-bg-color))",
         minHeight: "100vh",
       }}
     >
@@ -32,7 +32,7 @@ export default function AdminPage() {
       <ul className="nav nav-tabs container mt-3 mb-4">
         <li className="nav-item">
           <button
-            className={`nav-link ${activeTab === "albums" ? "active" : ""}`}
+            className={`nav-link text-white ${activeTab === "albums" ? "active" : ""}`}
             onClick={() => setActiveTab("albums")}
           >
             Albums
@@ -40,7 +40,7 @@ export default function AdminPage() {
         </li>
         <li className="nav-item">
           <button
-            className={`nav-link ${activeTab === "songs" ? "active" : ""}`}
+            className={`nav-link text-white ${activeTab === "songs" ? "active" : ""}`}
             onClick={() => setActiveTab("songs")}
           >
             Songs

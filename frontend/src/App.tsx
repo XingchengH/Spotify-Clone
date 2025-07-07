@@ -94,6 +94,14 @@ function App() {
     },
   ]);
 
+  // fetch user theme
+  useEffect(() => {
+    const theme = localStorage.getItem("theme");
+    if (theme) {
+      document.documentElement.setAttribute("data-theme", theme);
+    }
+  }, []);
+
   return (
     <>
       <RouterProvider router={router}></RouterProvider>

@@ -10,6 +10,7 @@ import { updateApiToken } from "./lib/axios.ts";
 
 const token = localStorage.getItem("token");
 if (token) updateApiToken(token);
+
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <Provider store={store}>

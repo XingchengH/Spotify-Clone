@@ -81,7 +81,7 @@ export default function EditProfile() {
   };
 
   return (
-    <div className="container mt-5 d-flex flex-column">
+    <div className="container-fluid h-100 d-flex flex-column text-white rounded p-4" style={{backgroundColor: "var(--primary-bg-color)", maxWidth: "600px"}}>
       <h2 className="py-2 fw-bold mb-5">Edit Personal Info</h2>
       <form className="form-group" onSubmit={handleSubmit} autoComplete="off">
         <div className="mb-3">
@@ -156,7 +156,7 @@ export default function EditProfile() {
           autoComplete="new-password"
         />
         <div className="d-grid">
-          <button type="submit" className="btn btn-success">
+          <button type="submit" className="btn btn-secondary">
             Save
           </button>
         </div>

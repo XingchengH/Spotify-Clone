@@ -9,8 +9,8 @@ interface StatsCardProps {
 export default function StatsCard({ icon, label, value }: StatsCardProps) {
   return (
     <div className="col-md-4 mb-4">
-      <div className="card text-white mb-3">
-        <div className="card-body d-flex align-items-center">
+      <div className="card text-white mb-3 bg-dark border-0 shadow">
+        <div className="card-body d-flex align-items-center ">
           <FontAwesomeIcon icon={icon} size="2x" className="me-3" />
           <div>
             <h5 className="card-title">{label}</h5>

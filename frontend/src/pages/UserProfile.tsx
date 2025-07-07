@@ -28,7 +28,7 @@ export default function UserProfile() {
         style={{
           zIndex: 0,
           background:
-            "linear-gradient(to bottom, rgba(80,56,160,0.8), rgba(34,31,31,0.8))",
+            "linear-gradient(to bottom, var(--bg-rbga-from), var(--bg-rbga-to))",
         }}
         aria-hidden="true"
       >
@@ -45,7 +45,7 @@ export default function UserProfile() {
               style={{ width: "240px", height: "240px", objectFit: "cover" }}
             />
             <div className="d-flex flex-column justify-content-end">
-              <p className="small fw-medium">Profile</p>
+              <p className="small fw-bold">Profile</p>
               <h1
                 className="display-1 fw-bold my-4"
                 style={{ whiteSpace: "nowrap", textOverflow: "ellipsis" }}
@@ -53,8 +53,9 @@ export default function UserProfile() {
                 {profile.username}
               </h1>
               <div className="d-flex align-items-center small text-white gap-2">
-                {profile.likedSongs.length} like songs •{" "}
-                {profile.followedArtists.length} follwing artists
+                <span className="fw-bold">{profile.likedSongs.length}</span>
+                like songs •<span className="fw-bold">{profile.followedArtists.length}</span>
+                follwing artists
               </div>
             </div>
           </div>
