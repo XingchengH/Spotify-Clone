@@ -35,7 +35,7 @@ interface SongsState {
 export const fetchSongs = createAsyncThunk<Song[]>(
   "songs/fetchSongs",
   async () => {
-    console.log("Fetching songs from /api/songs");
+    // console.log("Fetching songs from /api/songs");
     const res = await axiosInstance.get("/songs");
     return res.data;
   }
