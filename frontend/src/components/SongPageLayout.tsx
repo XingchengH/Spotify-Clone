@@ -111,9 +111,3 @@ export default function SongPageLayout({
     </div>
   );
 }
-function dispatch(arg0: {
-  payload: { songs: Song[]; startIdx?: number };
-  type: "playerSongs/playAlbum";
-}) {
-  throw new Error("Function not implemented.");
-}

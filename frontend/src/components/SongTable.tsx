@@ -9,7 +9,7 @@ import { faHeart as regularHeart } from "@fortawesome/free-regular-svg-icons";
 import type { Song } from "../store/slices/songsSlice";
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispath, RootState } from "../store/store";
-import { playAlbum, togglePlay } from "../store/slices/usePlayerSlice";
+import { playAlbum } from "../store/slices/usePlayerSlice";
 import { useEffect } from "react";
 import { fetchUserLikedSongs } from "../store/slices/userSlice";
 
@@ -33,9 +33,7 @@ export default function SongTable({
   showReleaseDate = false,
 }: SongTableProps) {
   const dispatch = useDispatch<AppDispath>();
-  const { currentSong, isPlaying } = useSelector(
-    (state: RootState) => state.playerSongs
-  );
+  const { currentSong } = useSelector((state: RootState) => state.playerSongs);
 
   useEffect(() => {
     dispatch(fetchUserLikedSongs());
@@ -61,7 +59,7 @@ export default function SongTable({
             return (
               <tr
                 key={song._id}
-                style={{cursor: "pointer" }}
+                style={{ cursor: "pointer" }}
                 onClick={() => handlePlaySong(index)}
               >
                 {isCurrentSong ? (

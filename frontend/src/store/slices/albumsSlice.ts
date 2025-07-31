@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { axiosInstance } from "../../lib/axios";
 import type { Artist } from "./artistSlice";
+import type { Song } from "./songsSlice";
 
 export interface Album {
   _id: string;
@@ -8,7 +9,8 @@ export interface Album {
   artist: Artist; // artist is an object now
   imgUrl: string;
   releaseYear: number;
-  songs?: string[];
+  // songs?: string[];
+  songs?: Song[];
 }
 
 export const fetchAlbums = createAsyncThunk<Album[]>(
@@ -34,6 +36,7 @@ export const deleteAlbum = createAsyncThunk(
       await axiosInstance.delete(`/albums/admin/albums/${albumId}`);
       return albumId;
     } catch (err) {
+      console.log(err);
       return thunkAPI.rejectWithValue("Failed to delete album");
     }
   }

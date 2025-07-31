@@ -89,7 +89,7 @@ export default function AddSongDialog() {
     } catch (error) {
       console.error(
         "Error adding song:",
-        error.response?.data || error.message
+        error instanceof Error ? error.message : error
       );
       toast.error("Failed to add song. Please try again.");
     } finally {

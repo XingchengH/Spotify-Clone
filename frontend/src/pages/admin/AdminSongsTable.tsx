@@ -1,6 +1,5 @@
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { axiosInstance } from "../../lib/axios";
 import { useDispatch } from "react-redux";
 import type { AppDispath } from "../../store/store";
 import { deleteSong } from "../../store/slices/songsSlice";
@@ -27,6 +26,7 @@ export default function AdminSongsTable({
       toast.success("Song deleted successfully!");
     } catch (error) {
       toast.error("Failed to delete song.");
+      console.log(error);
     }
   };
 

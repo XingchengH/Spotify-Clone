@@ -6,7 +6,7 @@ import { useEffect, useRef, useState } from "react";
 
 export default function AudioInfo() {
   const { currentSong } = useSelector((state: RootState) => state.playerSongs);
-  const titleRef = useRef<HTMLElement>(null);
+  const titleRef = useRef<HTMLDivElement>(null);
   const [isTruncated, setIsTruncated] = useState(false);
 
   useEffect(() => {

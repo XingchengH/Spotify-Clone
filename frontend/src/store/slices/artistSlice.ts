@@ -1,7 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { axiosInstance } from "../../lib/axios";
-import type { RootState } from "@reduxjs/toolkit/query";
-
 export interface Artist {
   _id: string;
   name: string;

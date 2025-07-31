@@ -5,7 +5,7 @@ import { ResizableBox } from "react-resizable";
 import "react-resizable/css/styles.css";
 import AudioPlayer from "./components/AudioPlayer";
 import PlaybackControls from "./components/PlaybackControls";
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import AudioInfo from "./components/AudioInfo";
 import { useSelector } from "react-redux";
 import type { RootState } from "../store/store";

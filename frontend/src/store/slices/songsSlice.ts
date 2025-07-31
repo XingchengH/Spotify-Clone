@@ -73,12 +73,11 @@ export const deleteSong = createAsyncThunk(
       console.log("DELETE song success", res.status, res.data);
       return songId;
     } catch (err) {
-      console.error("DELETE song failed", err.response?.data || err);
+      console.log(err);
       return thunkAPI.rejectWithValue("Delete failed");
     }
   }
 );
-
 
 const initialState: SongsState = {
   songs: [],
