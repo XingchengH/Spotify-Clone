@@ -25,6 +25,7 @@ export default function AudioInfo() {
         <img
           src={currentSong.imgUrl}
           alt={currentSong.title}
+          loading="lazy"
           className="card-img-top rounded shadow-lg"
           style={{ maxHeight: "200px", width: "auto" }}
         />

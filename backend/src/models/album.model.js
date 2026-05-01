@@ -7,9 +7,10 @@ const albumSchema = mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Artist",
       required: true,
+      index: true,
     },
     imgUrl: { type: String, required: true },
-    releaseYear: { type: Number, required: true },
+    releaseYear: { type: Number, required: true, min: 1900, max: 2100 },
     songs: [
       { type: mongoose.Schema.Types.ObjectId, ref: "Song", default: null },
     ],

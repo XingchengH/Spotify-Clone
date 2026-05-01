@@ -2,12 +2,8 @@ import axios from "axios";
 
 const baseURL = import.meta.env.VITE_API_URL + "/api";
 
-export const axiosInstance = axios.create({
-  // baseURL: "http://localhost:8080/api",
-  baseURL: baseURL,
-});
+export const axiosInstance = axios.create({ baseURL });
 
-// automatically include token for every api request
 export const updateApiToken = (token: string | null) => {
   if (token) {
     axiosInstance.defaults.headers.common["Authorization"] = `Bearer ${token}`;
@@ -15,3 +11,17 @@ export const updateApiToken = (token: string | null) => {
     delete axiosInstance.defaults.headers.common["Authorization"];
   }
 };
+
+axiosInstance.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    if (error.response?.status === 401 || error.response?.status === 403) {
+      const { default: store } = await import("../store/store");
+      const { logout } = await import("../store/slices/userSlice");
+      store.dispatch(logout());
+      const { default: toast } = await import("react-hot-toast");
+      toast.error("Your session has expired. Please log in again.", { id: "session-expired" });
+    }
+    return Promise.reject(error);
+  }
+);

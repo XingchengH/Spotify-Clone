@@ -24,11 +24,12 @@ export const fetchArtistById = createAsyncThunk(
   "artist/fetchById",
   async (artistId: string, thunkAPI) => {
     try {
-      const res = await axiosInstance.get(`/artist/${artistId}`);
+      const res = await axiosInstance.get(`/artists/${artistId}`);
       return res.data;
-    } catch (error: any) {
+    } catch (error) {
+      const err = error as { response?: { data?: { message?: string } } };
       return thunkAPI.rejectWithValue(
-        error.response?.data?.message || "Failed to fetch artist"
+        err.response?.data?.message || "Failed to fetch artist"
       );
     }
   }

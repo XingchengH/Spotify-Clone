@@ -20,13 +20,15 @@ import {
   faVolumeUp,
 } from "@fortawesome/free-solid-svg-icons";
 
-export default function PlaybackControls() {
+import React from "react";
+
+function PlaybackControls() {
   const dispatch = useDispatch<AppDispath>();
   const { currentSong, isPlaying } = useSelector(
     (state: RootState) => state.playerSongs
   );
 
-  const [valume, setVolume] = useState(75);
+  const [volume, setVolume] = useState(75);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -88,6 +90,7 @@ export default function PlaybackControls() {
             <img
               src={currentSong.imgUrl}
               alt={currentSong.title}
+              loading="lazy"
               style={{
                 width: "50px",
                 height: "50px",
@@ -163,7 +166,7 @@ export default function PlaybackControls() {
           <div className="text-white">{formatDuration(duration)}</div>
         </div>
       </div>
-      {/* Valume control */}
+      {/* Volume control */}
       <div
         className="d-flex align-items-center justify-content-between"
         style={{
@@ -192,7 +195,7 @@ export default function PlaybackControls() {
               min={0}
               max={100}
               step={1}
-              value={valume}
+              value={volume}
               onChange={(value) => {
                 setVolume(parseFloat(value.target.value));
                 if (audioRef.current) {
@@ -206,7 +209,8 @@ export default function PlaybackControls() {
         </div>
       </div>
 
-      {/* Audio Element */}
     </footer>
   );
 }
+
+export default React.memo(PlaybackControls);

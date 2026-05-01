@@ -36,6 +36,6 @@ router.post(
   }
 );
 
-router.put("/:id", updateUserProfile);
+router.put("/:id", auth, updateUserProfile);
 
 export default router;

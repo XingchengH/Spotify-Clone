@@ -1,7 +1,8 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { type IconDefinition } from "@fortawesome/fontawesome-svg-core";
 
 interface StatsCardProps {
-  icon: any;
+  icon: IconDefinition;
   label: string;
   value: number;
 }

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useLocation } from "react-router-dom";
+import type { RootState } from "../store/store";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMusic, faSearch } from "@fortawesome/free-solid-svg-icons";
 import { fetchSongs } from "../store/slices/songsSlice";
@@ -12,6 +13,7 @@ const SearchBar = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const songsStatus = useSelector((state: RootState) => state.songs.status);
 
   const [query, setQuery] = useState("");
   const [genreFilter, setGenreFilter] = useState("");
@@ -19,8 +21,8 @@ const SearchBar = () => {
   const [showDropdown, setShowDropdown] = useState(false);
 
   useEffect(() => {
-    dispatch(fetchSongs());
-  }, [dispatch]);
+    if (songsStatus === "idle") dispatch(fetchSongs());
+  }, [dispatch, songsStatus]);
 
   useEffect(() => {
     if (!location.pathname.startsWith("/search")) {

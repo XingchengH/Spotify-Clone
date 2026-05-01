@@ -8,26 +8,21 @@ const auth = (req, res, next) => {
   // console.log("SECRET:", process.env.JWT_SECRET);
 
   if (!token) {
-    console.log("No token provided");
     return res.status(401).json({ message: "Unauthorized - No token" });
   }
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    // console.log("Decoded JWT:", decoded);
     req.user = decoded;
     next();
   } catch (err) {
-    console.log("JWT verification error:", err.message);
     res.status(403).json({ message: "Forbidden - Invalid or expired token" });
   }
 };
 
 export const requireAuth = (req, res, next) => {
   try {
-    const currentUser = req.user;
-    const isAdmin = process.env.ADMIN_EMAIL === currentUser.email;
-    if (!isAdmin) {
+    if (!req.user?.isAdmin) {
       return res.status(403).json({ message: "Forbidden - User is not admin" });
     }
     next();

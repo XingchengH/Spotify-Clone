@@ -36,7 +36,6 @@ export const deleteAlbum = createAsyncThunk(
       await axiosInstance.delete(`/albums/admin/albums/${albumId}`);
       return albumId;
     } catch (err) {
-      console.log(err);
       return thunkAPI.rejectWithValue("Failed to delete album");
     }
   }

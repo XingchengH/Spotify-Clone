@@ -3,7 +3,9 @@ import { useDispatch, useSelector } from "react-redux";
 import type { AppDispath, RootState } from "../../store/store";
 import { playNext } from "../../store/slices/usePlayerSlice";
 
-export default function AudioPlayer() {
+import React from "react";
+
+function AudioPlayer() {
   const audioRef = useRef<HTMLAudioElement>(null);
   const prevSongRef = useRef<string | null>(null);
 
@@ -47,3 +49,5 @@ export default function AudioPlayer() {
 
   return <audio ref={audioRef} />;
 }
+
+export default React.memo(AudioPlayer);

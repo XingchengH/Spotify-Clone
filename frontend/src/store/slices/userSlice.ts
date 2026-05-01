@@ -90,9 +90,10 @@ export const fetchCurrentUser = createAsyncThunk(
     try {
       const res = await axiosInstance.get("users/me");
       return res.data;
-    } catch (error: any) {
+    } catch (error) {
+      const err = error as { response?: { data?: { message?: string } } };
       return thunkAPI.rejectWithValue(
-        error.response?.data?.message || "Failed to fetch user"
+        err.response?.data?.message || "Failed to fetch user"
       );
     }
   }
@@ -105,10 +106,10 @@ export const fetchUserLikedSongs = createAsyncThunk(
     try {
       const res = await axiosInstance.get("users/likedSongs");
       return res.data;
-    } catch (error: any) {
-      console.error("Error fetching liked songs:", error);
+    } catch (error) {
+      const err = error as { response?: { data?: { message?: string } } };
       return thunkAPI.rejectWithValue(
-        error.response?.data?.message || "Failed to fetch liked songs"
+        err.response?.data?.message || "Failed to fetch liked songs"
       );
     }
   }
@@ -121,10 +122,10 @@ export const fetchUserFollowedArtists = createAsyncThunk(
     try {
       const res = await axiosInstance.get("users/followArtist");
       return res.data.followedArtists;
-    } catch (error: any) {
-      console.error("Error fetching followed artists:", error);
+    } catch (error) {
+      const err = error as { response?: { data?: { message?: string } } };
       return thunkAPI.rejectWithValue(
-        error.response?.data?.message || "Failed to fetch followed artists"
+        err.response?.data?.message || "Failed to fetch followed artists"
       );
     }
   }
@@ -158,7 +159,6 @@ const userSlice = createSlice({
       state.user = jwtDecode<DecodedToken>(token);
       state.loading = false;
       localStorage.setItem("token", token);
-      updateApiToken(token);
     },
     logout(state) {
       state.token = null;

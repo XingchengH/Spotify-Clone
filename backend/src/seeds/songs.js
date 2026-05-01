@@ -5,6 +5,11 @@ import Artist from "../models/artist.model.js";
 
 config();
 
+if (process.env.NODE_ENV === "production") {
+  console.error("Seed scripts cannot run in production.");
+  process.exit(1);
+}
+
 const songs = [
   // A-Lin Songs (1–5)
   {

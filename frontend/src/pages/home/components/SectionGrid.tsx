@@ -43,6 +43,7 @@ const SectionGrid = ({ songs, title, isLoading }: SectionGridProps) => {
                   <img
                     src={song.imgUrl}
                     alt={song.title}
+                    loading="lazy"
                     className="w-100 h-100"
                     style={{
                       objectFit: "cover",

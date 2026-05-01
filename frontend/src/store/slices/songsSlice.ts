@@ -69,11 +69,9 @@ export const deleteSong = createAsyncThunk(
   "songs/deleteSong",
   async (songId: string, thunkAPI) => {
     try {
-      const res = await axiosInstance.delete(`/songs/admin/songs/${songId}`);
-      console.log("DELETE song success", res.status, res.data);
+      await axiosInstance.delete(`/songs/admin/songs/${songId}`);
       return songId;
     } catch (err) {
-      console.log(err);
       return thunkAPI.rejectWithValue("Delete failed");
     }
   }
@@ -116,7 +114,6 @@ const songsSlice = createSlice({
       .addCase(fetchSongs.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.error.message || "Failed to fetch songs";
-        console.error("Fetch songs failed:", action.error.message);
       })
 
       .addCase(fetchFeaturedSongs.pending, (state) => {

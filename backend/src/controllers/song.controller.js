@@ -31,7 +31,7 @@ export const getAllSongs = async (req, res) => {
     const songs = await Song.find(filter).populate("artist");
     res.json(songs);
   } catch (error) {
-    res.status(500).json({ message: "Error fetching songs", error });
+    res.status(500).json({ message: "Error fetching songs" });
   }
 };
 
@@ -185,7 +185,7 @@ export const addSong = async (req, res, next) => {
 
     res.status(201).json(song);
   } catch (error) {
-    res.status(500).json({ message: "Failed to add song", error });
+    res.status(500).json({ message: "Failed to add song" });
   }
 };
 
@@ -203,18 +203,16 @@ export const deleteSong = async (req, res) => {
     }
 
     if (song.albumId) {
-      await Album.findByIdAndUpdate(song.albumId, {
-        $pull: { songs: songId._id },
-      });
+      await Album.findByIdAndUpdate(song.albumId, { $pull: { songs: songId } });
     }
 
+    await User.updateMany({ likedSongs: songId }, { $pull: { likedSongs: songId } });
     await deleteFromS3(song.audioUrl);
     await deleteFromS3(song.imgUrl);
-
     await Song.findByIdAndDelete(songId);
 
     res.status(200).json({ message: "Song deleted successfully" });
   } catch (error) {
-    res.status(500).json({ message: "Failed to delete song", error });
+    res.status(500).json({ message: "Failed to delete song" });
   }
 };

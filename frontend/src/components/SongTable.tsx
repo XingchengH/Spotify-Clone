@@ -1,3 +1,4 @@
+import React from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -10,8 +11,6 @@ import type { Song } from "../store/slices/songsSlice";
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispath, RootState } from "../store/store";
 import { playAlbum } from "../store/slices/usePlayerSlice";
-import { useEffect } from "react";
-import { fetchUserLikedSongs } from "../store/slices/userSlice";
 
 const formatDuration = (seconds: number): string => {
   const min = Math.floor(seconds / 60);
@@ -26,7 +25,7 @@ type SongTableProps = {
   showReleaseDate?: boolean;
 };
 
-export default function SongTable({
+function SongTable({
   songs,
   likedSongIds,
   onLikeToggle,
@@ -34,10 +33,6 @@ export default function SongTable({
 }: SongTableProps) {
   const dispatch = useDispatch<AppDispath>();
   const { currentSong } = useSelector((state: RootState) => state.playerSongs);
-
-  useEffect(() => {
-    dispatch(fetchUserLikedSongs());
-  }, [dispatch]);
 
   const handlePlaySong = (idx: number) => {
     if (!songs) return;
@@ -74,6 +69,7 @@ export default function SongTable({
                     <img
                       src={song.imgUrl}
                       alt={song.title}
+                      loading="lazy"
                       className="rounded"
                       style={{
                         width: "40px",
@@ -151,3 +147,5 @@ export default function SongTable({
     </div>
   );
 }
+
+export default React.memo(SongTable);

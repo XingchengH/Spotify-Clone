@@ -40,6 +40,7 @@ export default function FeatureSection({
             <img
               src={song.imgUrl}
               alt={song.title}
+              loading="lazy"
               className="rounded me-3"
               style={{ width: "80px", height: "80px", objectFit: "cover" }}
             />
