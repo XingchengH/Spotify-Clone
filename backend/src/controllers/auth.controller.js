@@ -5,7 +5,8 @@ import jwt from "jsonwebtoken";
 const COOKIE_OPTIONS = {
   httpOnly: true,
   secure: process.env.NODE_ENV === "production",
-  sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax",
+  // cross-origin (Vercel → Render) requires "none"; "lax" for local dev
+  sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
   maxAge: 2 * 60 * 60 * 1000, // 2 hours
 };
 
