@@ -1,16 +1,24 @@
 import { useEffect, useState } from "react";
-import DashbordStats from "./DashboardStats";
-import Header from "./Header";
-import AlbumsTabContent from "./AlbumsTabContent";
-import SongsTabContent from "./SongsTabContent";
+import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import type { AppDispath } from "../../store/store";
 import { fetchSongs } from "../../store/slices/songsSlice";
 import { fetchAlbums } from "../../store/slices/albumsSlice";
+import DashbordStats from "./DashboardStats";
+import AlbumsTabContent from "./AlbumsTabContent";
+import SongsTabContent from "./SongsTabContent";
+import ThemeToggle from "../../components/ThemeToggle";
+
+const TABS = [
+  { key: "albums", label: "Albums" },
+  { key: "songs",  label: "Songs"  },
+] as const;
+
+type Tab = typeof TABS[number]["key"];
 
 export default function AdminPage() {
-  const [activeTab, setActiveTab] = useState<"albums" | "songs">("albums");
-
+  const [activeTab, setActiveTab] = useState<Tab>("albums");
   const dispatch = useDispatch<AppDispath>();
 
   useEffect(() => {
@@ -19,52 +27,43 @@ export default function AdminPage() {
   }, [dispatch]);
 
   return (
-    <div
-      className="container-fluid h-100"
-      style={{
-        background: "linear-gradient(to bottom, var(--primary-color), var(--secondary-bg-color))",
-        minHeight: "100vh",
-      }}
-    >
-      <Header />
+    <div className="sp-admin-page">
+      {/* Header */}
+      <header className="sp-admin-header">
+        <h1 className="sp-admin-heading">Admin Dashboard</h1>
+        <div className="sp-admin-header-actions">
+          <ThemeToggle />
+          <Link to="/" className="sp-btn-pill">Main</Link>
+        </div>
+      </header>
+
       <DashbordStats />
 
-      <ul className="nav nav-tabs container mt-3 mb-4">
-        <li className="nav-item">
-          <button
-            className={`nav-link text-white ${activeTab === "albums" ? "active" : ""}`}
-            onClick={() => setActiveTab("albums")}
-          >
-            Albums
-          </button>
-        </li>
-        <li className="nav-item">
-          <button
-            className={`nav-link text-white ${activeTab === "songs" ? "active" : ""}`}
-            onClick={() => setActiveTab("songs")}
-          >
-            Songs
-          </button>
-        </li>
-      </ul>
+      {/* Tab switcher */}
+      <div className="sp-admin-tabs-wrap">
+        <div className="sp-admin-tabs">
+          {TABS.map(({ key, label }) => (
+            <button
+              key={key}
+              onClick={() => setActiveTab(key)}
+              className={`sp-admin-tab${activeTab === key ? " sp-admin-tab--active" : ""}`}
+            >
+              {activeTab === key && (
+                <motion.div
+                  layoutId="admin-tab-pill"
+                  className="sp-admin-tab-pill"
+                  transition={{ type: "spring", stiffness: 500, damping: 35 }}
+                />
+              )}
+              <span className="sp-admin-tab-label">{label}</span>
+            </button>
+          ))}
+        </div>
+      </div>
 
-      <div
-        className="bg-dark container rounded-3"
-        style={{
-          overflowY: "auto",
-          maxHeight: "calc(100vh - 380px)",
-          minHeight: "300px",
-        }}
-      >
-        {activeTab === "albums" ? (
-          <div>
-            <AlbumsTabContent />
-          </div>
-        ) : (
-          <div>
-            <SongsTabContent />
-          </div>
-        )}
+      {/* Content */}
+      <div className="sp-admin-content">
+        {activeTab === "albums" ? <AlbumsTabContent /> : <SongsTabContent />}
       </div>
     </div>
   );

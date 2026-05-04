@@ -11,62 +11,42 @@ export default function AudioInfo() {
 
   useEffect(() => {
     if (titleRef.current) {
-      const isOverflowing =
-        titleRef.current.scrollWidth > titleRef.current.clientWidth;
-      setIsTruncated(isOverflowing);
+      setIsTruncated(titleRef.current.scrollWidth > titleRef.current.clientWidth);
     }
   }, [currentSong?.title]);
 
   if (!currentSong) return null;
 
   return (
-    <div className="d-flex justify-content-center h-100 bg-dark pt-2">
-      <div className="card bg-transparent border-0">
-        <img
-          src={currentSong.imgUrl}
-          alt={currentSong.title}
-          className="card-img-top rounded shadow-lg"
-          style={{ maxHeight: "200px", width: "auto" }}
-        />
-        <div className="card-body">
-          <div
-            ref={titleRef}
-            style={{
-              width: "100%",
-              maxWidth: "100%",
-              overflow: "hidden",
-              whiteSpace: "nowrap",
-            }}
-            className="mx-auto"
-          >
-            {isTruncated ? (
-              <motion.h5
-                className="card-title text-white m-0"
-                style={{ display: "inline-block" }}
-                animate={{ x: [0, -100, 0] }}
-                transition={{
-                  duration: 10,
-                  repeat: Infinity,
-                  repeatType: "loop",
-                  ease: "easeInOut",
-                }}
-              >
-                {currentSong.title}
-              </motion.h5>
-            ) : (
-              <h5 className="card-title text-white m-0">{currentSong.title}</h5>
-            )}
-          </div>
+    <div className="sp-audio-panel">
+      <img
+        src={currentSong.imgUrl}
+        alt={currentSong.title}
+        loading="lazy"
+        className="sp-audio-art"
+      />
 
-          <p className="card-text">{currentSong.artist.name}</p>
-          <Link
-            to={`/artist/${currentSong.artist._id}`}
-            className="btn btn-primary btn-sm border-0 text-nowrap"
-          >
-            View Artist
-          </Link>
+      <div className="sp-audio-text">
+        <div className="sp-audio-title-wrap" ref={titleRef}>
+          {isTruncated ? (
+            <motion.span
+              className="sp-audio-title"
+              style={{ display: "inline-block" }}
+              animate={{ x: [0, -80, 0] }}
+              transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+            >
+              {currentSong.title}
+            </motion.span>
+          ) : (
+            <span className="sp-audio-title">{currentSong.title}</span>
+          )}
         </div>
+        <div className="sp-audio-artist">{currentSong.artist.name}</div>
       </div>
+
+      <Link to={`/artist/${currentSong.artist._id}`} className="sp-btn-outline">
+        View Artist
+      </Link>
     </div>
   );
 }

@@ -6,6 +6,28 @@ import path from "path";
 
 dotenv.config();
 
+const ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"];
+const ALLOWED_AUDIO_TYPES = ["audio/mpeg", "audio/mp4", "audio/wav", "audio/ogg", "audio/x-m4a"];
+const MIME_TO_EXT = { "image/jpeg": "jpg", "image/png": "png", "image/webp": "webp" };
+
+const imageFilter = (req, file, cb) => {
+  if (ALLOWED_IMAGE_TYPES.includes(file.mimetype)) {
+    cb(null, true);
+  } else {
+    cb(new Error("Only JPEG, PNG, and WebP images are allowed"), false);
+  }
+};
+
+const songFileFilter = (req, file, cb) => {
+  if (file.fieldname === "imageFile" && ALLOWED_IMAGE_TYPES.includes(file.mimetype)) {
+    cb(null, true);
+  } else if (file.fieldname === "audioFile" && ALLOWED_AUDIO_TYPES.includes(file.mimetype)) {
+    cb(null, true);
+  } else {
+    cb(new Error(`Invalid file type for field: ${file.fieldname}`), false);
+  }
+};
+
 const s3 = new S3Client({
   region: process.env.AWS_REGION,
   credentials: {
@@ -20,10 +42,12 @@ const upload = multer({
     bucket: process.env.S3_BUCKET,
     contentType: multerS3.AUTO_CONTENT_TYPE,
     key: (req, file, cb) => {
-      const filename = `avatars/${req.user.id}-avatar.jpg`;
-      cb(null, filename);
+      const ext = MIME_TO_EXT[file.mimetype] || "jpg";
+      cb(null, `avatars/${req.user.id}-avatar.${ext}`);
     },
   }),
+  fileFilter: imageFilter,
+  limits: { fileSize: 5 * 1024 * 1024 },
 });
 
 const songUpload = multer({
@@ -33,12 +57,12 @@ const songUpload = multer({
     contentType: multerS3.AUTO_CONTENT_TYPE,
     key: (req, file, cb) => {
       const ext = path.extname(file.originalname);
-      const folder =
-        file.fieldname === "audioFile" ? "songs/audio" : "songs/images";
-      const filename = `${folder}/${Date.now()}-${ext}`;
-      cb(null, filename);
+      const folder = file.fieldname === "audioFile" ? "songs/audio" : "songs/images";
+      cb(null, `${folder}/${Date.now()}-${ext}`);
     },
   }),
+  fileFilter: songFileFilter,
+  limits: { fileSize: 50 * 1024 * 1024 },
 });
 
 const deleteFromS3 = async (url) => {
@@ -69,11 +93,11 @@ const albumUpload = multer({
     contentType: multerS3.AUTO_CONTENT_TYPE,
     key: (req, file, cb) => {
       const ext = path.extname(file.originalname);
-      const folder = "albums";
-      const filename = `${folder}/${Date.now()}-${ext}`;
-      cb(null, filename);
+      cb(null, `albums/${Date.now()}-${ext}`);
     },
   }),
+  fileFilter: imageFilter,
+  limits: { fileSize: 5 * 1024 * 1024 },
 });
 
 export { upload, songUpload, deleteFromS3, albumUpload };

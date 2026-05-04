@@ -2,6 +2,7 @@ import { deleteFromS3 } from "../lib/s3.js";
 import { Album } from "../models/album.model.js";
 import Artist from "../models/artist.model.js";
 import { Song } from "../models/song.model.js";
+import User from "../models/user.model.js";
 
 export const getAllAlbums = async (req, res, next) => {
   try {
@@ -66,25 +67,36 @@ export const addAlbum = async (req, res) => {
     );
     res.status(201).json(populatedAlbum);
   } catch (error) {
-    console.log("Error adding album", error);
-    res.status(500).json({ message: "Failed to add album", error });
+    res.status(500).json({ message: "Failed to add album" });
   }
 };
 
 export const deleteAlbum = async (req, res) => {
   try {
-    const album = await Album.findById(req.params.albumId);
+    const album = await Album.findById(req.params.albumId).populate("songs");
     if (!album) {
       return res.status(404).json({ message: "Album not found" });
     }
 
+    const songIds = album.songs.map((s) => s._id);
+
+    await Promise.all(
+      album.songs.flatMap((s) => [deleteFromS3(s.audioUrl), deleteFromS3(s.imgUrl)])
+    );
+
+    if (songIds.length) {
+      await User.updateMany(
+        { likedSongs: { $in: songIds } },
+        { $pull: { likedSongs: { $in: songIds } } }
+      );
+      await Song.deleteMany({ _id: { $in: songIds } });
+    }
+
     await deleteFromS3(album.imgUrl);
-    await Song.updateMany({ albumId: album._id }, { $unset: { albumId: "" } });
     await Album.findByIdAndDelete(req.params.albumId);
 
     res.status(200).json({ message: "Album deleted successfully" });
   } catch (error) {
-    console.log("Error deleting album", error);
-    res.status(500).json({ message: "Failed to delete album", error });
+    res.status(500).json({ message: "Failed to delete album" });
   }
 };

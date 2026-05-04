@@ -1,199 +1,121 @@
-import { Navbar, Container, Dropdown, Image } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faHome,
-  faBell,
-  faUsers,
-  faSun,
-  faMoon,
-} from "@fortawesome/free-solid-svg-icons";
 import { faSpotify } from "@fortawesome/free-brands-svg-icons";
-
+import { faHome } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispath, RootState } from "../../store/store";
-import { fetchCurrentUser, logout } from "../../store/slices/userSlice";
+import { fetchCurrentUser, logoutAsync } from "../../store/slices/userSlice";
 import avg from "../../assets/imgs/dummyAvactor.jpg";
-
 import { resetSongs } from "../../store/slices/songsSlice";
 import SearchBar from "../SearchBar";
+import ThemeToggle from "../ThemeToggle";
 import { resetAlbums } from "../../store/slices/albumsSlice";
 import { AnimatePresence, motion } from "motion/react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 
 const MainNavigation = () => {
   const dispatch = useDispatch<AppDispath>();
-  const [show, setShow] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
   const token = useSelector((state: RootState) => state.user.token);
   const isAdmin = useSelector((state: RootState) => state.user?.user?.isAdmin);
   const profile = useSelector((state: RootState) => state.user.profile);
 
-  const [isDark, setIsDark] = useState(false);
-
   useEffect(() => {
-    if (!profile && token) {
-      dispatch(fetchCurrentUser());
-    }
+    if (!profile && token) dispatch(fetchCurrentUser());
   }, [dispatch, profile, token]);
 
-  const handleLogout = () => {
-    dispatch(logout());
-    dispatch(resetAlbums());
-    dispatch(resetSongs());    
-  };
-
   useEffect(() => {
-    const theme = localStorage.getItem("theme") || "dark";
-    document.documentElement.setAttribute("data-bs-theme", theme);
-    setIsDark(theme === "dark");
+    const handleClick = (e: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setMenuOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
   }, []);
 
-  const handleThemeChange = () => {
-    setIsDark((prev) => !prev);
-    const newTheme = isDark ? "brown" : "dark";
-    document.documentElement.setAttribute("data-bs-theme", newTheme);
-    localStorage.setItem("theme", newTheme);
+  const handleLogout = () => {
+    dispatch(logoutAsync());
+    dispatch(resetAlbums());
+    dispatch(resetSongs());
+    setMenuOpen(false);
   };
 
+  const menuItems = [
+    { label: "Profile", to: "/user/me" },
+    { label: "Edit Profile", to: "/account" },
+    ...(isAdmin ? [{ label: "Admin Dashboard", to: "/admin" }] : []),
+  ];
+
   return (
-    <Navbar expand="lg" className="px-3 py-2" style={{ background: "#000" }}>
-      <Container
-        fluid
-        className="d-flex justify-content-md-between justify-content-sm-start align-items-center gap-4"
-      >
-        <Link to="/">
-          <FontAwesomeIcon icon={faSpotify} size="2x" color="#1DB954" />
-        </Link>
-        <div className="d-flex align-items-center gap-3">
-          <div
-            className="d-none d-md-flex border-none rounded-circle bg-dark d-flex justify-content-center align-items-center text-truncate"
-            style={{ width: "40px", height: "40px" }}
-          >
-            <Link
-              to="/"
-              className="text-white"
-              style={{ transform: "translate(0px, -1px)" }}
-            >
-              <FontAwesomeIcon icon={faHome} size="lg" />
-            </Link>
-          </div>
+    <nav className="sp-nav">
+      <Link to="/" className="sp-nav-logo">
+        <FontAwesomeIcon icon={faSpotify} />
+      </Link>
 
-          <SearchBar />
-        </div>
+      <Link to="/" className="sp-nav-home">
+        <FontAwesomeIcon icon={faHome} />
+      </Link>
 
+      <div className="sp-nav-search-wrapper">
+        <SearchBar />
+      </div>
+
+      <div className="sp-nav-actions">
+        <ThemeToggle />
         {token ? (
-          <div className="d-none d-sm-flex align-items-center gap-4">
-            {/* Theme toggle */}
-            <AnimatePresence mode="wait" initial={false}>
-              {isDark ? (
+          <div className="sp-avatar-menu-wrap" ref={menuRef}>
+            <button
+              className="sp-avatar-btn"
+              onClick={() => setMenuOpen((v) => !v)}
+            >
+              <img
+                src={profile?.imageUrl ? `${profile.imageUrl}?t=${Date.now()}` : avg}
+                alt="avatar"
+              />
+            </button>
+
+            <AnimatePresence>
+              {menuOpen && (
                 <motion.div
-                  key="sun"
-                  onClick={handleThemeChange}
-                  initial={{ opacity: 0, rotate: -90, scale: 0.8 }}
-                  animate={{ opacity: 1, rotate: 0, scale: 1 }}
-                  exit={{ opacity: 0, rotate: 90, scale: 0.8 }}
-                  transition={{ duration: 0.3 }}
-                  style={{ cursor: "pointer" }}
+                  key="menu"
+                  className="sp-dropdown"
+                  initial={{ opacity: 0, scale: 0.95, y: -6 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.95, y: -6 }}
+                  transition={{ duration: 0.15 }}
                 >
-                  <FontAwesomeIcon icon={faSun} color="#ea733d" />
-                </motion.div>
-              ) : (
-                <motion.div
-                  key="moon"
-                  onClick={handleThemeChange}
-                  initial={{ opacity: 0, rotate: 90, scale: 0.8 }}
-                  animate={{ opacity: 1, rotate: 0, scale: 1 }}
-                  exit={{ opacity: 0, rotate: -90, scale: 0.8 }}
-                  transition={{ duration: 0.3 }}
-                  style={{ cursor: "pointer" }}
-                >
-                  <FontAwesomeIcon icon={faMoon} color="#6daac7" />
+                  {menuItems.map(({ label, to }) => (
+                    <Link
+                      key={to}
+                      to={to}
+                      className="sp-dropdown-item"
+                      onClick={() => setMenuOpen(false)}
+                    >
+                      {label}
+                    </Link>
+                  ))}
+                  <div className="sp-dropdown-divider" />
+                  <button className="sp-dropdown-item" onClick={handleLogout}>
+                    Sign Out
+                  </button>
                 </motion.div>
               )}
             </AnimatePresence>
-            <FontAwesomeIcon
-              icon={faBell}
-              color="white"
-              title="Notification"
-              cursor="pointer"
-            />
-            <FontAwesomeIcon
-              icon={faUsers}
-              color="white"
-              title="Friends"
-              cursor="pointer"
-            />
-            <Dropdown align="end" show={show} onToggle={() => setShow(!show)}>
-              <Dropdown.Toggle
-                variant="dark"
-                className="p-0 border d-flex align-items-center justify-content-center rounded-circle"
-                style={{ width: "40px", height: "40px" }}
-                bsPrefix="custom-dropdown-toggle"
-              >
-                <Image
-                  src={
-                    profile?.imageUrl
-                      ? `${profile?.imageUrl}?t=${Date.now()}`
-                      : avg
-                  }
-                  roundedCircle
-                  width={32}
-                  height={32}
-                />
-              </Dropdown.Toggle>
-
-              <AnimatePresence>
-                {show && (
-                  <motion.div
-                    key="menu"
-                    className="dropdown-menu dropdown-menu-end show bg-dark text-white border rounded py-2"
-                    initial={{ opacity: 0, scale: 0.95, y: -10 }}
-                    animate={{ opacity: 1, scale: 1, y: 0 }}
-                    exit={{ opacity: 0, scale: 0.95, y: -10 }}
-                    transition={{ duration: 0.2 }}
-                    style={{
-                      position: "absolute",
-                      right: 0,
-                      top: "100%",
-                      zIndex: 1000,
-                      minWidth: "10rem",
-                    }}
-                  >
-                    <Link className="dropdown-item text-white" to="/user/me">
-                      Profile
-                    </Link>
-                    <Link className="dropdown-item text-white" to="/account">
-                      Edit Profile
-                    </Link>
-                    {isAdmin && (
-                      <Link className="dropdown-item text-white" to="/admin">
-                        Admin Dashboard
-                      </Link>
-                    )}
-                    <div className="dropdown-divider"></div>
-                    <button
-                      className="dropdown-item text-white"
-                      onClick={handleLogout}
-                    >
-                      Logout
-                    </button>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </Dropdown>
           </div>
         ) : (
-          <div className="d-flex align-items-center gap-4">
-            <Link to="/login" className="btn btn-outline-light">
-              Log in
+          <>
+            <Link to="/login" className="sp-nav-signin">
+              Sign In
             </Link>
-            <Link to="/signup" className="btn btn-light">
-              Sign up
+            <Link to="/signup" className="sp-btn-primary sp-btn-primary--sm">
+              Sign Up
             </Link>
-          </div>
+          </>
         )}
-      </Container>
-    </Navbar>
+      </div>
+    </nav>
   );
 };
 

@@ -7,6 +7,7 @@ const songSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Artist",
       required: true,
+      index: true,
     },
     imgUrl: { type: String, required: false },
     audioUrl: { type: String, required: true },
@@ -18,6 +19,7 @@ const songSchema = new mongoose.Schema(
       ref: "Album",
       default: null,
       required: false,
+      index: true,
     },
   },
   { timestamps: true }

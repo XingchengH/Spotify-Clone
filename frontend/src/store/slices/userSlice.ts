@@ -64,24 +64,41 @@ const initialState: UserState = {
   followedArtistsError: null,
 };
 
-// Decode JWT and set auth info
+// Decode JWT and set auth info — tries localStorage first, then falls back to cookie via /auth/me
 export const initializeAuth = createAsyncThunk(
   "user/initializeAuth",
   async (_, thunkAPI) => {
-    const token = localStorage.getItem("token");
-    if (!token) return thunkAPI.rejectWithValue("No token");
-
-    const decoded = jwtDecode<DecodedToken>(token);
-    const now = Date.now() / 1000;
-    if (decoded.exp && decoded.exp < now) {
+    const stored = localStorage.getItem("token");
+    if (stored) {
+      const decoded = jwtDecode<DecodedToken>(stored);
+      const now = Date.now() / 1000;
+      if (decoded.exp && decoded.exp > now) {
+        updateApiToken(stored);
+        return { token: stored, user: decoded };
+      }
       localStorage.removeItem("token");
-      return thunkAPI.rejectWithValue("Token expired");
     }
 
-    updateApiToken(token);
-    return { token, user: decoded };
+    // Fall back to cookie-based session
+    try {
+      const res = await axiosInstance.get("/auth/me");
+      const { token, user } = res.data as { token: string; user: DecodedToken };
+      localStorage.setItem("token", token);
+      updateApiToken(token);
+      return { token, user };
+    } catch {
+      return thunkAPI.rejectWithValue("No valid session");
+    }
   }
 );
+
+export const logoutAsync = createAsyncThunk("user/logoutAsync", async () => {
+  try {
+    await axiosInstance.post("/auth/logout");
+  } catch {
+    // best-effort — clear client state regardless
+  }
+});
 
 // Get full user data by ID
 export const fetchCurrentUser = createAsyncThunk(
@@ -90,9 +107,10 @@ export const fetchCurrentUser = createAsyncThunk(
     try {
       const res = await axiosInstance.get("users/me");
       return res.data;
-    } catch (error: any) {
+    } catch (error) {
+      const err = error as { response?: { data?: { message?: string } } };
       return thunkAPI.rejectWithValue(
-        error.response?.data?.message || "Failed to fetch user"
+        err.response?.data?.message || "Failed to fetch user"
       );
     }
   }
@@ -105,10 +123,10 @@ export const fetchUserLikedSongs = createAsyncThunk(
     try {
       const res = await axiosInstance.get("users/likedSongs");
       return res.data;
-    } catch (error: any) {
-      console.error("Error fetching liked songs:", error);
+    } catch (error) {
+      const err = error as { response?: { data?: { message?: string } } };
       return thunkAPI.rejectWithValue(
-        error.response?.data?.message || "Failed to fetch liked songs"
+        err.response?.data?.message || "Failed to fetch liked songs"
       );
     }
   }
@@ -121,10 +139,10 @@ export const fetchUserFollowedArtists = createAsyncThunk(
     try {
       const res = await axiosInstance.get("users/followArtist");
       return res.data.followedArtists;
-    } catch (error: any) {
-      console.error("Error fetching followed artists:", error);
+    } catch (error) {
+      const err = error as { response?: { data?: { message?: string } } };
       return thunkAPI.rejectWithValue(
-        error.response?.data?.message || "Failed to fetch followed artists"
+        err.response?.data?.message || "Failed to fetch followed artists"
       );
     }
   }
@@ -170,6 +188,7 @@ const userSlice = createSlice({
       state.followedArtists = [];
       state.followedArtistsStatus = "idle";
       localStorage.removeItem("token");
+      updateApiToken(null);
     },
   },
   extraReducers: (builder) => {
@@ -235,6 +254,19 @@ const userSlice = createSlice({
       .addCase(fetchUserFollowedArtists.rejected, (state, action) => {
         state.followedArtistsStatus = "failed";
         state.followedArtistsError = action.payload as string;
+      })
+
+      .addCase(logoutAsync.fulfilled, (state) => {
+        state.token = null;
+        state.user = null;
+        state.profile = null;
+        state.loading = false;
+        state.likedSongs = [];
+        state.likedSongsStatus = "idle";
+        state.followedArtists = [];
+        state.followedArtistsStatus = "idle";
+        localStorage.removeItem("token");
+        updateApiToken(null);
       });
   },
 });

@@ -1,51 +1,33 @@
+import { faTrash } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useDispatch } from "react-redux";
 import type { AppDispath } from "../../store/store";
 import { deleteAlbum } from "../../store/slices/albumsSlice";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import toast from "react-hot-toast";
 
-interface AdminAlbumsTableProps {
-  imgUrl?: string;
-  id: string;
-  title: string;
-  artist: string;
-}
+interface Props { imgUrl?: string; id: string; title: string; artist: string; }
 
-export default function AdminAlbumsTable({
-  imgUrl,
-  title,
-  id,
-  artist,
-}: AdminAlbumsTableProps) {
+export default function AdminAlbumsTable({ imgUrl, title, id, artist }: Props) {
   const dispatch = useDispatch<AppDispath>();
 
-  const handleDelete = async (albumId: string) => {
+  const handleDelete = async () => {
     try {
-      await dispatch(deleteAlbum(albumId));
+      await dispatch(deleteAlbum(id));
       toast.success("Album deleted successfully!");
-    } catch (error) {
+    } catch {
       toast.error("Failed to delete album.");
     }
   };
 
   return (
-    <tr className="hover-bg cursor-pointer">
-      <td>
-        <img
-          src={imgUrl}
-          alt={title}
-          className="rounded me-3"
-          style={{ width: "40px", height: "40px" }}
-        />
+    <tr className="sp-admin-table-row">
+      <td className="sp-admin-table-cell sp-admin-table-cell--title">
+        {imgUrl && <img src={imgUrl} alt={title} className="sp-admin-table-img" />}
         {title}
       </td>
-      <td>{artist}</td>
-      <td>
-        <button
-          className="btn btn-danger bg-transparent border-0 text-danger"
-          onClick={() => handleDelete(id)}
-        >
+      <td className="sp-admin-table-cell">{artist}</td>
+      <td className="sp-admin-table-cell">
+        <button className="sp-admin-delete-btn" onClick={handleDelete} aria-label="Delete album">
           <FontAwesomeIcon icon={faTrash} />
         </button>
       </td>

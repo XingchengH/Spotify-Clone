@@ -6,6 +6,11 @@ import Artist from "../models/artist.model.js";
 
 config();
 
+if (process.env.NODE_ENV === "production") {
+  console.error("Seed scripts cannot run in production.");
+  process.exit(1);
+}
+
 const albums = [
   {
     title: "A-LIN同名专辑",

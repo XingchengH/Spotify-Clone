@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
-import { Form, Button, Container, Alert } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { axiosInstance } from "../lib/axios";
 import { login } from "../store/slices/userSlice";
 import LoadingSpinner from "../components/Spinner";
@@ -10,13 +9,10 @@ import type { RootState } from "../store/store";
 export default function Login() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
   const user = useSelector((state: RootState) => state.user);
 
   useEffect(() => {
-    if (user.token) {
-      navigate("/");
-    }
+    if (user.token) navigate("/");
   }, [user.token, navigate]);
 
   const [email, setEmail] = useState("");
@@ -28,12 +24,8 @@ export default function Login() {
     e.preventDefault();
     setLoading(true);
     setErr("");
-
     try {
-      const res = await axiosInstance.post("/auth/login", {
-        email,
-        password,
-      });
+      const res = await axiosInstance.post("/auth/login", { email, password });
       dispatch(login({ token: res.data.token }));
     } catch (error: any) {
       setErr(error.response?.data?.message || "Login failed");
@@ -42,37 +34,54 @@ export default function Login() {
   };
 
   return (
-    <Container style={{ maxWidth: "400px", boxShadow: "5px 10px 20px rgba(255,255,255,0.4)" }} className="mt-5 position-relative border-bottom border-end p-4">
-      {loading && <LoadingSpinner fullscreen text="Logging in..." />}
+    <div className="sp-auth-page">
+      {loading && <LoadingSpinner fullscreen text="Signing in…" />}
 
-      <h2 className="mb-4">Login</h2>
-      {err && <Alert variant="danger">{err}</Alert>}
+      <div className="sp-auth-card">
+        <h1 className="sp-auth-heading">Sign In</h1>
 
-      <Form onSubmit={handleSubmit}>
-        <Form.Group controlId="email" className="mb-3">
-          <Form.Label>Email</Form.Label>
-          <Form.Control
-            type="email"
-            required
-            disabled={loading}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-        </Form.Group>
+        {err && <div className="sp-auth-error">{err}</div>}
 
-        <Form.Group controlId="password" className="mb-3">
-          <Form.Label>Password</Form.Label>
-          <Form.Control
-            type="password"
-            required
-            disabled={loading}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-        </Form.Group>
+        <form className="sp-auth-form" onSubmit={handleSubmit}>
+          <div className="sp-field">
+            <label className="sp-field-label">Email</label>
+            <input
+              type="email"
+              required
+              disabled={loading}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="sp-field-input"
+            />
+          </div>
 
-        <Button type="submit" className="w-100" disabled={loading}>
-          {loading ? "Logging in..." : "Log In"}
-        </Button>
-      </Form>
-    </Container>
+          <div className="sp-field">
+            <label className="sp-field-label">Password</label>
+            <input
+              type="password"
+              required
+              disabled={loading}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="sp-field-input"
+            />
+          </div>
+
+          <div className="sp-auth-submit">
+            <button
+              type="submit"
+              disabled={loading}
+              className="sp-btn-primary sp-btn-primary--full"
+            >
+              {loading ? "Signing in…" : "Sign In"}
+            </button>
+          </div>
+        </form>
+
+        <p className="sp-auth-footer">
+          Don't have an account? <Link to="/signup">Sign Up</Link>
+        </p>
+      </div>
+    </div>
   );
 }

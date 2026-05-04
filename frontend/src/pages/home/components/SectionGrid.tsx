@@ -1,7 +1,10 @@
+import { useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import type { Song } from "../../../store/slices/songsSlice";
 import LoadingSpinner from "../../../components/Spinner";
 import PlayButton from "./PlayButton";
-import { useState } from "react";
+
+const COLLAPSED_COUNT = 7;
 
 type SectionGridProps = {
   title: string;
@@ -10,77 +13,56 @@ type SectionGridProps = {
 };
 
 const SectionGrid = ({ songs, title, isLoading }: SectionGridProps) => {
-  const [hoveredSongId, setHoveredSongId] = useState<string | null>(null);
+  const [showAll, setShowAll] = useState(false);
+  const [hoveredId, setHoveredId] = useState<string | null>(null);
 
   if (isLoading) return <LoadingSpinner />;
 
+  const visible = showAll ? songs : songs.slice(0, COLLAPSED_COUNT);
+  const canExpand = songs.length > COLLAPSED_COUNT;
+
   return (
-    <div className="mb-5">
-      <div className="d-flex justify-content-between align-items-center mb-3">
-        <h2 className="h4 fw-bold">{title}</h2>
-        <button className="btn btn-link text-secondary text-decoration-none p-0">
-          Show all
-        </button>
+    <div>
+      <div className="sp-section-header">
+        <h2 className="sp-section-title">{title}</h2>
+        {canExpand && (
+          <button className="sp-btn-ghost" onClick={() => setShowAll((v) => !v)}>
+            {showAll ? "Show less" : "Show all"}
+          </button>
+        )}
       </div>
 
-      <div className="row row-cols-1 row-cols-sm-2 row-cols-lg-4 g-4">
-        {songs.map((song) => (
-          <div key={song._id} className="col">
-            <div
-              className="p-3 rounded bg-dark bg-opacity-50 shadow-sm position-relative"
-              style={{ cursor: "pointer", transition: "background 0.3s" }}
-              onMouseEnter={(e) => {
-                setHoveredSongId(song._id);
-                e.currentTarget.classList.add("bg-opacity-75");
-              }}
-              onMouseLeave={(e) => {
-                setHoveredSongId(null);
-                e.currentTarget.classList.remove("bg-opacity-75");
-              }}
+      <motion.div layout className="sp-grid">
+        <AnimatePresence initial={false}>
+          {visible.map((song) => (
+            <motion.div
+              key={song._id}
+              layout
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              transition={{ duration: 0.18 }}
+              className="sp-grid-card"
+              onMouseEnter={() => setHoveredId(song._id)}
+              onMouseLeave={() => setHoveredId(null)}
             >
-              <div className="mb-3 position-relative">
-                <div className="ratio ratio-1x1 rounded overflow-hidden shadow position-relative">
-                  <img
-                    src={song.imgUrl}
-                    alt={song.title}
-                    className="w-100 h-100"
-                    style={{
-                      objectFit: "cover",
-                      transition: "transform 0.3s",
-                    }}
-                    onMouseEnter={(e) =>
-                      (e.currentTarget.style.transform = "scale(1.05)")
-                    }
-                    onMouseLeave={(e) =>
-                      (e.currentTarget.style.transform = "scale(1)")
-                    }
-                  />
-                  <div className="d-flex justify-content-center align-items-center">
-                    <PlayButton
-                      song={song}
-                      size={50}
-                      isHover={hoveredSongId === song._id}
-                    />
-                  </div>
+              <div className="sp-grid-img-wrap">
+                <img
+                  src={song.imgUrl}
+                  alt={song.title}
+                  loading="lazy"
+                  className="sp-grid-img"
+                />
+                <div className="sp-grid-overlay">
+                  <PlayButton song={song} size={44} isHover={hoveredId === song._id} />
                 </div>
               </div>
-
-              <h3
-                className="fw-medium mb-1 text-truncate"
-                style={{ maxWidth: "100%" }}
-              >
-                {song.title}
-              </h3>
-              <p
-                className="text-muted text-truncate"
-                style={{ fontSize: "0.9rem", maxWidth: "100%" }}
-              >
-                {song.artist?.name || "Unknown Artist"}
-              </p>
-            </div>
-          </div>
-        ))}
-      </div>
+              <div className="sp-grid-title">{song.title}</div>
+              <div className="sp-grid-artist">{song.artist?.name || "Unknown Artist"}</div>
+            </motion.div>
+          ))}
+        </AnimatePresence>
+      </motion.div>
     </div>
   );
 };

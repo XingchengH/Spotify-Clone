@@ -48,6 +48,10 @@ export const updateUserProfile = async (req, res) => {
     const { username, email, password } = req.body;
     const userId = req.params.id;
 
+    if (req.user.id.toString() !== userId.toString()) {
+      return res.status(403).json({ message: "Forbidden" });
+    }
+
     const updates = {};
 
     if (username) updates.username = username;
@@ -73,8 +77,7 @@ export const updateUserProfile = async (req, res) => {
 
     res.json(updateUser);
   } catch (error) {
-    console.log("Error updating user", error);
-    res.status(500).json({ message: "Failed to update user", error });
+    res.status(500).json({ message: "Failed to update user" });
   }
 };
 

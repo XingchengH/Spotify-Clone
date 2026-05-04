@@ -1,4 +1,3 @@
-// components/SongPageLayout.tsx
 import PlayButton from "./button/PlayButton";
 import SongTable from "./SongTable";
 import type { Song } from "../store/slices/songsSlice";
@@ -28,85 +27,39 @@ export default function SongPageLayout({
   showReleaseDate = false,
 }: SongPageLayoutProps) {
   const dispatch = useDispatch<AppDispath>();
-  const { currentSong, isPlaying } = useSelector(
-    (state: RootState) => state.playerSongs
-  );
+  const { currentSong, isPlaying } = useSelector((state: RootState) => state.playerSongs);
 
   const handlePlayAlbum = () => {
-    if (!songs) return;
-    const isCurrentAlbumPlaying = songs.some(
-      (song) => song._id === currentSong?._id
-    );
+    if (!songs.length) return;
+    const isCurrentAlbumPlaying = songs.some((s) => s._id === currentSong?._id);
     if (isCurrentAlbumPlaying) dispatch(togglePlay());
-    else {
-      dispatch(playAlbum({ songs, startIdx: 0 }));
-    }
+    else dispatch(playAlbum({ songs, startIdx: 0 }));
   };
 
+  const albumIsPlaying = isPlaying && songs.some((s) => s._id === currentSong?._id);
+
   return (
-    <div className="h-100 overflow-hidden rounded">
-      <div
-        className="text-white text-break"
-        style={{ position: "relative", height: "100%" }}
-      >
-        <div className="position-relative" style={{ height: "100%" }}>
-          <div
-            className="position-absolute top-0 start-0 w-100 h-100"
-            style={{
-              zIndex: 0,
-              background:
-                "linear-gradient(to bottom, var(--bg-rbga-from), var(--bg-rbga-to))",
-            }}
-            aria-hidden="true"
-          />
-          <div
-            className="position-relative overflow-hidden"
-            style={{
-              height: "100%",
-            }}
-          >
-            {/* Header */}
-            <div className="d-flex p-4 gap-4 pb-4 text-truncate">
-              <img
-                src={coverImgUrl}
-                alt={title}
-                className="rounded shadow-lg"
-                style={{ width: "240px", height: "240px", objectFit: "cover" }}
-              />
-              <div className="d-flex flex-column justify-content-end">
-                <p className="small fw-medium">{typeLabel}</p>
-                <h1
-                  className="display-1 fw-bold my-4"
-                  style={{ whiteSpace: "nowrap", textOverflow: "ellipsis" }}
-                >
-                  {title}
-                </h1>
-                <div className="d-flex align-items-center small text-white gap-2">
-                  {subtitle}
-                </div>
-              </div>
-            </div>
-
-            {/* Play Button */}
-            <div className="px-4 pb-3 d-flex align-items-center gap-3">
-              <PlayButton
-                handlePlayAlbum={handlePlayAlbum}
-                isPlaying={
-                  isPlaying &&
-                  songs.some((song) => song._id === currentSong?._id)
-                }
-              />
-            </div>
-
-            {/* Songs Table container */}
-            <SongTable
-              songs={songs}
-              likedSongIds={likedSongIds}
-              onLikeToggle={onLikeToggle}
-              showReleaseDate={showReleaseDate}
-            />
-          </div>
+    <div className="sp-song-page">
+      <div className="sp-song-hero">
+        <img src={coverImgUrl} alt={title} className="sp-song-cover" />
+        <div className="sp-song-meta">
+          <div className="sp-song-type-label">{typeLabel}</div>
+          <h1 className="sp-song-title">{title}</h1>
+          <div className="sp-song-subtitle">{subtitle}</div>
         </div>
+      </div>
+
+      <div className="sp-song-controls">
+        <PlayButton handlePlayAlbum={handlePlayAlbum} isPlaying={albumIsPlaying} />
+      </div>
+
+      <div className="sp-song-tracklist">
+        <SongTable
+          songs={songs}
+          likedSongIds={likedSongIds}
+          onLikeToggle={onLikeToggle}
+          showReleaseDate={showReleaseDate}
+        />
       </div>
     </div>
   );

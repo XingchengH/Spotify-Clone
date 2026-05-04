@@ -1,5 +1,5 @@
 import { Router } from "express";
-import auth from "../middleware/auth.middleware.js";
+import auth, { requireAuth } from "../middleware/auth.middleware.js";
 import { songUpload } from "../lib/s3.js";
 
 import {
@@ -23,6 +23,7 @@ router.post("/", auth, addSong);
 router.post(
   "/admin/songs",
   auth,
+  requireAuth,
   songUpload.fields([
     { name: "audioFile", maxCount: 1 },
     { name: "imageFile", maxCount: 1 },
@@ -30,6 +31,6 @@ router.post(
   addSong
 );
 
-router.delete("/admin/songs/:id", auth, deleteSong);
+router.delete("/admin/songs/:id", auth, requireAuth, deleteSong);
 
 export default router;
