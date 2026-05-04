@@ -2,10 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faMusic,
-  faHeart as solidHeart,
-} from "@fortawesome/free-solid-svg-icons";
+import { faMusic, faHeart as solidHeart } from "@fortawesome/free-solid-svg-icons";
 import { faHeart as regularHeart } from "@fortawesome/free-regular-svg-icons";
 import type { Song } from "../store/slices/songsSlice";
 import { useDispatch, useSelector } from "react-redux";
@@ -13,9 +10,8 @@ import type { AppDispath, RootState } from "../store/store";
 import { playAlbum } from "../store/slices/usePlayerSlice";
 
 const formatDuration = (seconds: number): string => {
-  const min = Math.floor(seconds / 60);
-  const sec = seconds % 60;
-  return `${min}:${sec.toString().padStart(2, "0")}`;
+  const m = Math.floor(seconds / 60);
+  return `${m}:${(seconds % 60).toString().padStart(2, "0")}`;
 };
 
 type SongTableProps = {
@@ -25,125 +21,70 @@ type SongTableProps = {
   showReleaseDate?: boolean;
 };
 
-function SongTable({
-  songs,
-  likedSongIds,
-  onLikeToggle,
-  showReleaseDate = false,
-}: SongTableProps) {
+function SongTable({ songs, likedSongIds, onLikeToggle, showReleaseDate = false }: SongTableProps) {
   const dispatch = useDispatch<AppDispath>();
   const { currentSong } = useSelector((state: RootState) => state.playerSongs);
-
-  const handlePlaySong = (idx: number) => {
-    if (!songs) return;
-    dispatch(playAlbum({ songs, startIdx: idx }));
+  const handlePlay = (idx: number) => {
+    if (songs.length) dispatch(playAlbum({ songs, startIdx: idx }));
   };
 
   return (
-    <div
-      className="backdrop-blur-sm overflow-auto m-2 rounded text-truncate p-2"
-      style={{
-        maxHeight: "calc(100vh - 541px)",
-      }}
-    >
-      <table className="table table-hover table-borderless text-white align-middle mb-0">
-        <thead></thead>
-        <tbody>
-          {songs.map((song, index) => {
-            const isCurrentSong = currentSong?._id === song._id;
-            return (
-              <tr
-                key={song._id}
-                style={{ cursor: "pointer" }}
-                onClick={() => handlePlaySong(index)}
-              >
-                {isCurrentSong ? (
-                  <td>
-                    <FontAwesomeIcon icon={faMusic} />
-                  </td>
-                ) : (
-                  <td className="text-muted">{index + 1}</td>
-                )}
-                <td>
-                  <div className="d-flex align-items-center gap-3">
-                    <img
-                      src={song.imgUrl}
-                      alt={song.title}
-                      loading="lazy"
-                      className="rounded"
-                      style={{
-                        width: "40px",
-                        height: "40px",
-                        objectFit: "cover",
-                      }}
-                    />
-                    <div>
-                      <div
-                        className={`fw-semibold text-truncate ${
-                          isCurrentSong ? "text-secondary" : "text-white"
-                        }`}
-                      >
-                        {song.title}
-                      </div>
-                      {song.artist && (
-                        <div className="text-muted small text-truncate">
-                          <Link
-                            to={`/artist/${
-                              typeof song.artist === "string"
-                                ? song.artist
-                                : song.artist._id
-                            }`}
-                            className="text-decoration-none text-muted"
-                            onClick={(e) => e.stopPropagation()}
-                          >
-                            {typeof song.artist === "string"
-                              ? song.artist
-                              : song.artist.name}
-                          </Link>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </td>
-                {showReleaseDate && (
-                  <td className="text-muted">
-                    {song.createdAt?.split("T")[0]}
-                  </td>
-                )}
-                <td className="text-end text-muted text-truncate">
-                  {formatDuration(song.duration)}
-                </td>
-                <td className="text-end">
-                  <motion.span
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onLikeToggle(song._id);
-                    }}
-                    whileTap={{ scale: 1.3, rotate: 10 }}
-                    transition={{
-                      type: "spring",
-                      stiffness: 300,
-                      damping: 10,
-                    }}
-                    style={{ cursor: "pointer", display: "inline-block" }}
+    <div className="sp-track-list">
+      {songs.map((song, index) => {
+        const isActive = currentSong?._id === song._id;
+        const isLiked = likedSongIds.has(song._id);
+
+        return (
+          <div
+            key={song._id}
+            className="sp-track-row"
+            onClick={() => handlePlay(index)}
+          >
+            <div className={`sp-track-num${isActive ? " sp-track-num--active" : ""}`}>
+              {isActive
+                ? <FontAwesomeIcon icon={faMusic} style={{ fontSize: "12px" }} />
+                : index + 1}
+            </div>
+
+            <div className="sp-track-info">
+              <img
+                src={song.imgUrl}
+                alt={song.title}
+                loading="lazy"
+                className="sp-track-thumb"
+              />
+              <div style={{ minWidth: 0 }}>
+                <div className={`sp-track-title${isActive ? " sp-track-title--active" : ""}`}>
+                  {song.title}
+                </div>
+                {song.artist && (
+                  <Link
+                    to={`/artist/${typeof song.artist === "string" ? song.artist : song.artist._id}`}
+                    className="sp-track-artist"
+                    onClick={(e) => e.stopPropagation()}
                   >
-                    <FontAwesomeIcon
-                      icon={
-                        likedSongIds.has(song._id) ? solidHeart : regularHeart
-                      }
-                      className={`me-2 ${
-                        likedSongIds.has(song._id)
-                          ? "text-danger"
-                          : "text-white"
-                      }`}
-                    />
-                  </motion.span>
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
+                    {typeof song.artist === "string" ? song.artist : song.artist.name}
+                  </Link>
+                )}
+                {showReleaseDate && (
+                  <div className="sp-track-date">{song.createdAt?.split("T")[0]}</div>
+                )}
+              </div>
+            </div>
+
+            <div className="sp-track-duration">{formatDuration(song.duration)}</div>
+
+            <motion.button
+              className={`sp-track-like${isLiked ? " sp-track-like--liked" : ""}`}
+              onClick={(e) => { e.stopPropagation(); onLikeToggle(song._id); }}
+              whileTap={{ scale: 1.3, rotate: 10 }}
+              transition={{ type: "spring", stiffness: 300, damping: 10 }}
+            >
+              <FontAwesomeIcon icon={isLiked ? solidHeart : regularHeart} />
+            </motion.button>
+          </div>
+        );
+      })}
     </div>
   );
 }

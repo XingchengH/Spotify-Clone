@@ -1,4 +1,5 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import "./forceCss.css";
 import RootLayout from "./layout/RootLayout";
 import ErrorPage from "./pages/Error";
 import Dashboard from "./pages/home/Dashboard";
@@ -77,13 +78,6 @@ function App() {
       if (followedArtistsStatus === "idle") dispatch(fetchUserFollowedArtists());
     }
   }, [loading, token, user?.id, songsStatus, albumsStatus, likedSongsStatus, followedArtistsStatus, dispatch]);
-
-  useEffect(() => {
-    const theme = localStorage.getItem("theme");
-    if (theme) {
-      document.documentElement.setAttribute("data-theme", theme);
-    }
-  }, []);
 
   return (
     <>

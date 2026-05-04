@@ -1,34 +1,17 @@
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispath, RootState } from "../../store/store";
 import { useEffect, useRef, useState } from "react";
-import {
-  playNext,
-  playPrevious,
-  togglePlay,
-} from "../../store/slices/usePlayerSlice";
+import { playNext, playPrevious, togglePlay } from "../../store/slices/usePlayerSlice";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faBackward,
-  faForward,
-  faLaptop,
-  faListDots,
-  faMicrophone,
-  faPause,
-  faPlay,
-  faRandom,
-  faRepeat,
-  faVolumeUp,
-} from "@fortawesome/free-solid-svg-icons";
-
+import { faBackward, faForward, faPause, faPlay, faVolumeUp, faVolumeMute } from "@fortawesome/free-solid-svg-icons";
 import React from "react";
 
 function PlaybackControls() {
   const dispatch = useDispatch<AppDispath>();
-  const { currentSong, isPlaying } = useSelector(
-    (state: RootState) => state.playerSongs
-  );
+  const { currentSong, isPlaying } = useSelector((state: RootState) => state.playerSongs);
 
   const [volume, setVolume] = useState(75);
+  const [muted, setMuted] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -36,179 +19,99 @@ function PlaybackControls() {
   useEffect(() => {
     audioRef.current = document.querySelector("audio");
     const audio = audioRef.current;
-
     if (!audio) return;
 
-    const updateTime = () => {
-      setCurrentTime(audio.currentTime);
-      setDuration(audio.duration);
-    };
+    const updateTime = () => { setCurrentTime(audio.currentTime); setDuration(audio.duration); };
+    const onEnded = () => dispatch(togglePlay());
 
     audio.addEventListener("timeupdate", updateTime);
     audio.addEventListener("loadedmetadata", updateTime);
-
-    const handleEnded = () => {
-      dispatch(togglePlay());
-    };
-
-    audio.addEventListener("ended", handleEnded);
-
+    audio.addEventListener("ended", onEnded);
     return () => {
-      if (audio) {
-        audio.removeEventListener("timeupdate", updateTime);
-        audio.removeEventListener("loadedmetadata", updateTime);
-        audio.removeEventListener("ended", handleEnded);
-      }
+      audio.removeEventListener("timeupdate", updateTime);
+      audio.removeEventListener("loadedmetadata", updateTime);
+      audio.removeEventListener("ended", onEnded);
     };
   }, [currentSong, dispatch]);
 
-  const handleSeek = (value: number[]) => {
-    if (audioRef.current) {
-      audioRef.current.currentTime = value[0];
-    }
+  const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (audioRef.current) audioRef.current.currentTime = parseFloat(e.target.value);
   };
 
-  const formatDuration = (seconds: number): string => {
-    if (isNaN(seconds) || seconds === Infinity) return "0:00";
-
-    const rounded = Math.floor(seconds);
-    const min = Math.floor(rounded / 60);
-    const sec = rounded % 60;
-    return `${min}:${sec.toString().padStart(2, "0")}`;
+  const handleVolume = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const v = parseFloat(e.target.value);
+    setVolume(v);
+    if (audioRef.current) audioRef.current.volume = v / 100;
+    setMuted(v === 0);
   };
+
+  const toggleMute = () => {
+    if (!audioRef.current) return;
+    if (muted) { audioRef.current.volume = volume / 100; setMuted(false); }
+    else { audioRef.current.volume = 0; setMuted(true); }
+  };
+
+  const fmt = (s: number) => {
+    if (isNaN(s) || s === Infinity) return "0:00";
+    return `${Math.floor(s / 60)}:${Math.floor(s % 60).toString().padStart(2, "0")}`;
+  };
+
+  const seekPct = duration ? `${(currentTime / duration) * 100}%` : "0%";
+  const volPct = `${muted ? 0 : volume}%`;
 
   return (
-    <footer className="d-flex align-items-center justify-content-between p-3 bg-dark text-white rounded">
-      <div
-        className="d-flex align-items-center"
-        style={{
-          minWidth: "300px",
-        }}
-      >
-        {currentSong && (
+    <footer className="sp-playbar">
+      {/* Left — current song */}
+      <div className="sp-playbar-left">
+        {currentSong ? (
           <>
-            <img
-              src={currentSong.imgUrl}
-              alt={currentSong.title}
-              loading="lazy"
-              style={{
-                width: "50px",
-                height: "50px",
-                borderRadius: "5px",
-                marginRight: "10px",
-                objectFit: "cover",
-              }}
-            />
-            <div>
-              <h6 className="mb-0 text-truncate">{currentSong.title}</h6>
-              <small className="text-muted text-nowrap">
-                {currentSong?.artist?.name || "No song playing"}
-              </small>
+            <img src={currentSong.imgUrl} alt={currentSong.title} loading="lazy" className="sp-playbar-thumb" />
+            <div className="sp-playbar-song-info">
+              <div className="sp-playbar-title">{currentSong.title}</div>
+              <div className="sp-playbar-artist">{currentSong.artist?.name}</div>
             </div>
           </>
+        ) : (
+          <span className="sp-playbar-empty">No song playing</span>
         )}
       </div>
 
-      {/* Controls */}
-      <div className="d-flex flex-column align-items-center flex-grow-1 w-100 w-sm-45 gap-2">
-        <div className="d-flex align-items-center gap-4 gap-sm-3">
-          {/* shuffle icon */}
-          <button className="btn btn-secondary btn-sm bg-transparent border-0">
-            <FontAwesomeIcon icon={faRandom} />
-          </button>
-          {/* Previous button */}
-          <button
-            className="btn btn-secondary btn-sm bg-transparent border-0"
-            onClick={() => dispatch(playPrevious())}
-          >
+      {/* Center — controls + seek */}
+      <div className="sp-playbar-center">
+        <div className="sp-playbar-buttons">
+          <button className="sp-playbar-ctrl" onClick={() => dispatch(playPrevious())}>
             <FontAwesomeIcon icon={faBackward} />
           </button>
-
-          <button
-            className="btn btn-secondary btn-sm bg-transparent border-0"
-            onClick={() => dispatch(togglePlay())}
-          >
-            {isPlaying ? (
-              <FontAwesomeIcon icon={faPause} />
-            ) : (
-              <FontAwesomeIcon icon={faPlay} />
-            )}
+          <button className="sp-playbar-play" onClick={() => dispatch(togglePlay())}>
+            <FontAwesomeIcon icon={isPlaying ? faPause : faPlay} />
           </button>
-
-          {/* Next button */}
-          <button
-            className="btn btn-secondary btn-sm bg-transparent border-0"
-            onClick={() => dispatch(playNext())}
-          >
+          <button className="sp-playbar-ctrl" onClick={() => dispatch(playNext())}>
             <FontAwesomeIcon icon={faForward} />
           </button>
-
-          {/* Repeat */}
-          <button className="btn btn-secondary btn-sm bg-transparent border-0">
-            <FontAwesomeIcon icon={faRepeat} />
-          </button>
         </div>
 
-        <div
-          className="d-none d-sm-flex align-items-center justify-content-between w-100"
-          style={{ maxWidth: "500px" }}
-        >
-          <div className="text-white">{formatDuration(currentTime)}</div>
-          <input
-            type="range"
-            className="form-range flex-grow-1 mx-2 w-100"
-            min={0}
-            max={duration || 100}
-            step={1}
-            value={currentTime}
-            onChange={(e) => handleSeek([parseFloat(e.target.value)])}
-          />
-          <div className="text-white">{formatDuration(duration)}</div>
-        </div>
-      </div>
-      {/* Volume control */}
-      <div
-        className="d-flex align-items-center justify-content-between"
-        style={{
-          maxWidth: "300px",
-          width: "100%",
-        }}
-      >
-        <div className="d-flex align-items-center gap-2">
-          <button className="btn btn-secondary btn-sm bg-transparent border-0">
-            <FontAwesomeIcon icon={faMicrophone} />
-          </button>
-          <button className="btn btn-secondary btn-sm bg-transparent border-0">
-            <FontAwesomeIcon icon={faListDots} />
-          </button>
-          <button className="btn btn-secondary btn-sm bg-transparent border-0">
-            <FontAwesomeIcon icon={faLaptop} />
-          </button>
-          <div className="d-flex align-items-center gap-2">
-            <button className="btn btn-secondary btn-sm bg-transparent border-0">
-              <FontAwesomeIcon icon={faVolumeUp} />
-            </button>
-
-            <input
-              type="range"
-              className="form-range"
-              min={0}
-              max={100}
-              step={1}
-              value={volume}
-              onChange={(value) => {
-                setVolume(parseFloat(value.target.value));
-                if (audioRef.current) {
-                  audioRef.current.volume =
-                    parseFloat(value.target.value) / 100;
-                }
-              }}
-              style={{ width: "100px" }}
-            />
+        <div className="sp-playbar-seek">
+          <span className="sp-time sp-time--left">{fmt(currentTime)}</span>
+          <div className="sp-progress-track">
+            <div className="sp-progress-bg" />
+            <div className="sp-progress-fill" style={{ "--fill": seekPct } as React.CSSProperties} />
+            <input type="range" className="sp-progress-input" min={0} max={duration || 100} step={1} value={currentTime} onChange={handleSeek} />
           </div>
+          <span className="sp-time sp-time--right">{fmt(duration)}</span>
         </div>
       </div>
 
+      {/* Right — volume */}
+      <div className="sp-playbar-right">
+        <button className="sp-playbar-ctrl" onClick={toggleMute}>
+          <FontAwesomeIcon icon={muted ? faVolumeMute : faVolumeUp} />
+        </button>
+        <div className="sp-volume-track">
+          <div className="sp-volume-bg" />
+          <div className="sp-volume-fill" style={{ "--fill": volPct } as React.CSSProperties} />
+          <input type="range" className="sp-volume-input" min={0} max={100} step={1} value={muted ? 0 : volume} onChange={handleVolume} />
+        </div>
+      </div>
     </footer>
   );
 }

@@ -5,48 +5,29 @@ import type { AppDispath } from "../../store/store";
 import { deleteSong } from "../../store/slices/songsSlice";
 import toast from "react-hot-toast";
 
-interface AdminSongsTableProps {
-  imgUrl?: string;
-  id: string;
-  title: string;
-  artist: string;
-}
+interface Props { imgUrl?: string; id: string; title: string; artist: string; }
 
-export default function AdminSongsTable({
-  imgUrl,
-  title,
-  id,
-  artist,
-}: AdminSongsTableProps) {
+export default function AdminSongsTable({ imgUrl, title, id, artist }: Props) {
   const dispatch = useDispatch<AppDispath>();
 
-  const handleDelete = async (songId: string) => {
+  const handleDelete = async () => {
     try {
-      await dispatch(deleteSong(songId));
+      await dispatch(deleteSong(id));
       toast.success("Song deleted successfully!");
-    } catch (error) {
+    } catch {
       toast.error("Failed to delete song.");
-      console.log(error);
     }
   };
 
   return (
-    <tr className="hover-bg cursor-pointer">
-      <td>
-        <img
-          src={imgUrl}
-          alt={title}
-          className="rounded me-3"
-          style={{ width: "40px", height: "40px" }}
-        />
+    <tr className="sp-admin-table-row">
+      <td className="sp-admin-table-cell sp-admin-table-cell--title">
+        {imgUrl && <img src={imgUrl} alt={title} className="sp-admin-table-img" />}
         {title}
       </td>
-      <td>{artist}</td>
-      <td>
-        <button
-          className="btn btn-danger bg-transparent border-0 text-danger"
-          onClick={() => handleDelete(id)}
-        >
+      <td className="sp-admin-table-cell">{artist}</td>
+      <td className="sp-admin-table-cell">
+        <button className="sp-admin-delete-btn" onClick={handleDelete} aria-label="Delete song">
           <FontAwesomeIcon icon={faTrash} />
         </button>
       </td>

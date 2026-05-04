@@ -2,7 +2,7 @@ import axios from "axios";
 
 const baseURL = import.meta.env.VITE_API_URL + "/api";
 
-export const axiosInstance = axios.create({ baseURL });
+export const axiosInstance = axios.create({ baseURL, withCredentials: true });
 
 export const updateApiToken = (token: string | null) => {
   if (token) {
@@ -15,7 +15,8 @@ export const updateApiToken = (token: string | null) => {
 axiosInstance.interceptors.response.use(
   (response) => response,
   async (error) => {
-    if (error.response?.status === 401 || error.response?.status === 403) {
+    const isAuthEndpoint = error.config?.url?.includes("/auth/");
+    if (!isAuthEndpoint && (error.response?.status === 401 || error.response?.status === 403)) {
       const { default: store } = await import("../store/store");
       const { logout } = await import("../store/slices/userSlice");
       store.dispatch(logout());

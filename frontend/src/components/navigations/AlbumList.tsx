@@ -4,37 +4,21 @@ type Album = {
   _id: string;
   title: string;
   imgUrl: string;
-  artist?: {
-    _id: string;
-    name: string;
-  };
+  artist?: { _id: string; name: string };
 };
 
-type AlbumListProps = {
-  albumList: Album[];
-};
-
-export default function AlbumList({ albumList }: AlbumListProps) {
+export default function AlbumList({ albumList }: { albumList: Album[] }) {
   return (
-    <>
-      <Link
-        to="/user/likedSong"
-        className="p-2 mb-2 rounded d-flex align-items-center gap-3 text-decoration-none bg-dark text-white hover-bg"
-        style={{ cursor: "pointer" }}
-      >
+    <div className="sp-sidebar-list-inner">
+      <Link to="/user/likedSong" className="sp-sidebar-row">
         <img
           src="https://misc.scdn.co/liked-songs/liked-songs-300.jpg"
-          alt="Playlist img"
-          className="rounded flex-shrink-0"
-          style={{
-            width: "50px",
-            height: "50px",
-            objectFit: "cover",
-          }}
+          alt="Liked Songs"
+          className="sp-sidebar-row-img"
         />
-        <div className="d-none d-md-block text-truncate w-100">
-          <p className="mb-0 fw-medium text-truncate">Liked Songs</p>
-          <small className="text-muted text-truncate d-block">Playlist</small>
+        <div className="sp-sidebar-row-info">
+          <span className="sp-sidebar-row-title">Liked Songs</span>
+          <span className="sp-sidebar-row-sub">Playlist</span>
         </div>
       </Link>
 
@@ -42,27 +26,21 @@ export default function AlbumList({ albumList }: AlbumListProps) {
         <Link
           to={`/albums/${album._id}`}
           key={album._id || index}
-          className="p-2 rounded d-flex align-items-center gap-3 text-decoration-none bg-dark text-white hover-bg"
-          style={{ cursor: "pointer" }}
+          className="sp-sidebar-row"
         >
           <img
             src={album.imgUrl}
-            alt="Playlist img"
-            className="rounded flex-shrink-0"
-            style={{
-              width: "50px",
-              height: "50px",
-              objectFit: "cover",
-            }}
+            alt={album.title}
+            className="sp-sidebar-row-img"
           />
-          <div className="d-none d-md-block text-truncate w-100">
-            <p className="mb-0 fw-medium text-truncate">{album.title}</p>
-            <small className="text-muted text-truncate d-block">
+          <div className="sp-sidebar-row-info">
+            <span className="sp-sidebar-row-title">{album.title}</span>
+            <span className="sp-sidebar-row-sub">
               Album • {album.artist?.name || "Unknown Artist"}
-            </small>
+            </span>
           </div>
         </Link>
       ))}
-    </>
+    </div>
   );
 }

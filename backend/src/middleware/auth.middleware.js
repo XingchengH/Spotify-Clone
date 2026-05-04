@@ -2,10 +2,7 @@ import jwt from "jsonwebtoken";
 
 const auth = (req, res, next) => {
   const authHeader = req.headers.authorization;
-  const token = authHeader?.split(" ")[1];
-
-  // console.log("TOKEN:", token);
-  // console.log("SECRET:", process.env.JWT_SECRET);
+  const token = authHeader?.split(" ")[1] || req.cookies?.token;
 
   if (!token) {
     return res.status(401).json({ message: "Unauthorized - No token" });

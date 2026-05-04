@@ -16,78 +16,58 @@ export default function RootLayout() {
   const token = useSelector((state: RootState) => state.user.token);
 
   useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth <= 768);
-    };
-
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
-    return () => window.removeEventListener("resize", checkMobile);
+    const check = () => setIsMobile(window.innerWidth <= 834);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
   }, []);
 
-  const CustomHandleE = ({ ...restProps }) => (
-    <div className="custom-handle custom-handle-e" {...restProps} />
+  const CustomHandleE = ({ handleAxis: _a, ...rest }: { handleAxis?: string; [k: string]: unknown }) => (
+    <div className="custom-handle custom-handle-e" {...rest} />
   );
-  const CustomHandleW = ({ ...restProps }) => (
-    <div className="custom-handle custom-handle-w" {...restProps} />
+  const CustomHandleW = ({ handleAxis: _a, ...rest }: { handleAxis?: string; [k: string]: unknown }) => (
+    <div className="custom-handle custom-handle-w" {...rest} />
   );
 
   return (
-    <div
-      className="min-vh-100 d-flex flex-column"
-      style={{ background: "#000" }}
-    >
-      {/* Top Nav */}
-      <header className="sticky-top bg-dark text-white">
+    <div className="sp-root">
+      <header>
         <MainNavigation />
       </header>
 
       <AudioPlayer />
 
-      {/* Left side */}
-      <div className="flex-grow-1 d-flex" style={{ minHeight: 0 }}>
-        {token && (
+      <div className="sp-body-area">
+        {token && !isMobile && (
           <ResizableBox
-            width={100}
+            width={220}
             axis="x"
-            minConstraints={[125, 0]}
-            maxConstraints={[400, 0]}
+            minConstraints={[160, 0]}
+            maxConstraints={[340, 0]}
             resizeHandles={["e"]}
             handle={<CustomHandleE />}
-            className="p-2"
-            style={{ height: "100%" }} // ensure fills height
+            style={{ height: "100%", flexShrink: 0 }}
           >
             <LeftSidebar />
           </ResizableBox>
         )}
 
-        <div
-          className="flex-grow-1 p-2"
-          style={{
-            overflowY: "auto",
-            minHeight: "100%",
-          }}
-        >
+        <main className="sp-main-content">
           <Outlet />
-        </div>
+        </main>
 
-        {!isMobile && (
-          <>
-            {currentSong && (
-              <ResizableBox
-                width={125}
-                axis="x"
-                minConstraints={[125, 0]}
-                maxConstraints={[250, 0]}
-                resizeHandles={["w"]}
-                handle={<CustomHandleW />}
-                className="p-2"
-                style={{ height: "100%" }}
-              >
-                <AudioInfo />
-              </ResizableBox>
-            )}
-          </>
+        {!isMobile && currentSong && (
+          <ResizableBox
+            width={200}
+            axis="x"
+            minConstraints={[160, 0]}
+            maxConstraints={[280, 0]}
+            resizeHandles={["w"]}
+            handle={<CustomHandleW />}
+            style={{ height: "100%", flexShrink: 0 }}
+          >
+            <AudioInfo />
+          </ResizableBox>
         )}
       </div>
 
